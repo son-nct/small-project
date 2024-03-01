@@ -1,11 +1,9 @@
-<script setup>
-</script>
+<script setup></script>
 
 <template>
-<NuxtLayout>
-  <NuxtPage />
-</NuxtLayout>
-  
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
 </template>
 
 <style lang="scss" scoped></style>

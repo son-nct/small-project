@@ -1,7 +1,7 @@
 <template>
-<div>
+  <div>
     <p>Home Page</p>
-</div>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>

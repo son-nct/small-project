@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   imports: {
-    autoImport: false
+    autoImport: false,
   },
   // configure meta
   app: {
@@ -35,27 +35,25 @@ export default defineNuxtConfig({
   // configure nitro server and compress static files
   nitro: {
     compressPublicAssets: true,
-    prerender: {
-      crawlLinks: true,
-    },
   },
   // configure build module
   modules: [
     '@nuxtjs/google-fonts',
     'nuxt-icon',
-    // 'shadcn-nuxt'
+    '@nuxtjs/tailwindcss',
+    'shadcn-nuxt',
   ],
-  // shadcn: {
-  //   /**
-  //    * Prefix for all the imported component
-  //    */
-  //   prefix: '',
-  //   /**
-  //    * Directory that the component lives in.
-  //    * @default "./components/ui"
-  //    */
-  //   componentDir: './components/ui'
-  // },
+  shadcn: {
+    /**
+     * Prefix for all the imported component
+     */
+    prefix: '',
+    /**
+     * Directory that the component lives in.
+     * @default "./components/ui"
+     */
+    componentDir: './components/ui',
+  },
   googleFonts: {
     // Options
     display: 'swap',
