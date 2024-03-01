@@ -59,6 +59,6 @@
 
 <style lang="scss" scoped>
 .router-link-active {
- @apply bg-primary text-white font-bold border shadow-sm; 
+  @apply bg-primary text-white font-bold border shadow-sm;
 }
 </style>
