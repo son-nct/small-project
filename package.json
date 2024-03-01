@@ -1,5 +1,5 @@
 {
-  "name": "crypteck-ico-landing-page-crypto",
+  "name": "stakepool",
   "version": "0.0.0",
   "private": true,
   "author": "SonNguyen <sonnct.work@gmail.com>",
@@ -24,6 +24,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.1",
     "nuxt": "^3.10.3",
+    "nuxt-icon": "^0.6.8",
     "postcss": "^8.4.31",
     "prettier": "^3.1.0",
     "pug": "^3.0.2",

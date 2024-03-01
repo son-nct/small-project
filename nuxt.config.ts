@@ -1,6 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  imports: {
+    autoImport: false
+  },
   // configure meta
   app: {
     head: {
@@ -14,7 +17,7 @@ export default defineNuxtConfig({
         {
           hid: 'description',
           name: 'description',
-          content: 'Crypteck - ICO Landing Page & Crypto',
+          content: 'Namada - stakepool',
         },
         { name: 'format-detection', content: 'telephone=no' },
       ],
@@ -37,7 +40,22 @@ export default defineNuxtConfig({
     },
   },
   // configure build module
-  modules: ['@nuxtjs/google-fonts'],
+  modules: [
+    '@nuxtjs/google-fonts',
+    'nuxt-icon',
+    // 'shadcn-nuxt'
+  ],
+  // shadcn: {
+  //   /**
+  //    * Prefix for all the imported component
+  //    */
+  //   prefix: '',
+  //   /**
+  //    * Directory that the component lives in.
+  //    * @default "./components/ui"
+  //    */
+  //   componentDir: './components/ui'
+  // },
   googleFonts: {
     // Options
     display: 'swap',
