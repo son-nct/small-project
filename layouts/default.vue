@@ -4,12 +4,15 @@ import AppHeader from '@/components/organisms/AppHeader.vue'
 </script>
 
 <template>
+  <NuxtLoadingIndicator />
   <div>
     <div class="flex w-full h-full">
       <app-side-bar />
-      <app-header />
+      <div class="container mx-auto max-w-screen-2xl">
+        <app-header />
+        <slot></slot>
+      </div>
     </div>
-    <slot></slot>
   </div>
 </template>
 

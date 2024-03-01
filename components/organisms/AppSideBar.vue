@@ -17,44 +17,48 @@
       </div>
       <ul class="space-y-2 text-sm font-medium">
         <li>
-          <a
-            href="#"
-            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-slate-200"
+          <NuxtLink
+            to="/home"
+            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-primary/50"
           >
             <Icon name="fluent:home-20-regular" size="1.5rem" />
             <span class="flex-1 ml-3 whitespace-nowrap">Home</span>
-          </a>
+          </NuxtLink>
         </li>
         <li>
-          <a
-            href="#"
-            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-slate-100"
+          <NuxtLink
+            to="/blocks"
+            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-primary/50"
           >
             <Icon name="bitcoin-icons:block-outline" size="1.5rem" />
             <span class="flex-1 ml-3 whitespace-nowrap">Blocks</span>
-          </a>
+          </NuxtLink>
         </li>
         <li>
-          <a
-            href="#"
-            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-slate-100"
+          <NuxtLink
+            to="/validators"
+            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-primary/50"
           >
             <Icon name="prime:compass" size="1.5rem" />
             <span class="flex-1 ml-3 whitespace-nowrap">Validators</span>
-          </a>
+          </NuxtLink>
         </li>
         <li>
-          <a
-            href="#"
-            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-slate-100"
+          <NuxtLink
+            to="/transaction"
+            class="flex items-center px-3 py-2 rounded-lg text-slate-900 hover:bg-primary/50"
           >
             <Icon name="ant-design:transaction-outlined" size="1.5rem" />
             <span class="flex-1 ml-3 whitespace-nowrap">Transaction</span>
-          </a>
+          </NuxtLink>
         </li>
       </ul>
     </div>
   </aside>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.router-link-active {
+ @apply bg-primary text-white font-bold border shadow-sm; 
+}
+</style>
