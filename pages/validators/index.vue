@@ -1,11 +1,5 @@
-<script lang="ts" setup>
-import { useRoute } from 'vue-router'
+<script setup lang="ts">
 import { ref } from 'vue'
-import { useUtils } from '@/composables/useUtils.ts'
-import Breadcrumb from '@/components/ui/breadcrumb/Breadcrumb.vue'
-import DataListLayout from '@/components/templates/validators/DataListLayout.vue'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -15,11 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-
-const searchValue = defineModel('')
-// Column: VALIDATOR,	MONIKER,	UP TIME,	VOTING POWER,
-const header = ['Validator', 'Moniker', 'Up Time', 'Voting Power']
-
+// COMMIT SIGNATURES,	PARTICIPATION
+const header = [
+  'Validator',
+  'Moniker',
+  'Up Time',
+  'Voting Power',
+  'Commit Signatures',
+  'Participation',
+]
 const invoices = [
   {
     invoice: 'INV001',
@@ -65,67 +63,49 @@ const invoices = [
   },
 ]
 
-const route = useRoute()
-
-const { uppercaseFirstCharacter } = useUtils()
-const currentPageName = ref<string>('')
-currentPageName.value = route.name ? uppercaseFirstCharacter(route.name) : ''
+const searchValue = ref('')
 </script>
 
-<template>
-  <DataListLayout>
-    <template #breadcrumb>
-      <breadcrumb :current-page-name class="my-5" />
-    </template>
-    <template #search>
-      <!-- <Input :model-value="modelValue" placeholder="Search Validator"/> -->
-      <div class="flex items-center w-full gap-2">
-        <div class="relative items-center w-full max-w-md">
-          <Input
-            id="search"
-            v-model="searchValue"
-            type="text"
-            placeholder="Search Validator..."
-            class="pl-10"
-          />
-          <span
-            class="absolute inset-y-0 flex items-center justify-center px-2 start-0"
-          >
-            <Icon
-              name="radix-icons:magnifying-glass"
-              class="size-6 text-muted-foreground"
-            />
-          </span>
-        </div>
-        <Button>Search</Button>
-      </div>
-    </template>
-
-    <template #dataList>
-      <Table class="mt-3">
-        <TableCaption>A list of your recent invoices.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead v-for="text in header" class="w-[100px]">
-              {{ text }}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          <TableRow v-for="invoice in invoices" :key="invoice.invoice">
-            <TableCell class="font-medium">
-              {{ invoice.invoice }}
-            </TableCell>
-            <TableCell>{{ invoice.paymentStatus }}</TableCell>
-            <TableCell>{{ invoice.paymentMethod }}</TableCell>
-            <TableCell class="text-right">
-              {{ invoice.totalAmount }}
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </template>
-  </DataListLayout>
+<template lang="pug">
+main
+    article
+        section.bg-dark.relative.overflow-hidden
+            //- .absolute.inset-0.bg-pattern.bg-center.bg-no-repeat.bg-cover.bg-blend-overlay.mix-blend-overlay
+            .container(class='z-10 p-8 mx-auto lg:p-10')
+                  div(class='relative w-full h-fit rounded-3xl')
+                      .flex.flex-col.items-center.justify-center.gap-10.w-full
+                          h2.uppercase.font-ultraBold.text-white.text-center
+                              | Validators
+                          div(class='flex flex-col items-center w-full space-y-5 lg:space-y-0 lg:flex-row')
+                              div.flex.w-full.items-center.justify-center
+                                  div(class='w-full lg:w-1/3').border.border-primary.h-14
+                                      input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="You email address...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
+                                  button(type='button' class='w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14') Search
+                          div.container.mx-auto
+                            div(class='flex items-center justify-center w-full px-10')
+                              Table.mt-3
+                                TableCaption.text-white A list of your recent invoices.
+                                TableHeader
+                                    TableRow
+                                        TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
+                                            | {{ text }}
+                                TableBody
+                                    TableRow(v-for='invoice in invoices' :key='invoice.invoice')
+                                      TableCell.font-medium.text-white
+                                        | {{ invoice.invoice }}
+                                      TableCell.text-white {{ invoice.paymentStatus }}
+                                      TableCell.text-white {{ invoice.paymentMethod }}
+                                      TableCell.text-right.text-white {{ invoice.totalAmount }}
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.roadmap-pagination {
+  .btn-pagination {
+    @apply w-4 h-1 bg-lightGray rounded-lg duration-300 ease-out cursor-pointer;
+
+    &.active {
+      @apply w-8 h-1 bg-black #{!important};
+    }
+  }
+}
+</style>

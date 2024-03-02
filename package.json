@@ -38,10 +38,12 @@
   },
   "dependencies": {
     "@nuxt/image": "^1.3.0",
+    "@pinia/nuxt": "^0.5.1",
     "@vueuse/core": "^10.9.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-vue-next": "^0.344.0",
+    "pinia": "^2.1.7",
     "radix-vue": "^1.4.9",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7"

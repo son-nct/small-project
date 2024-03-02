@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   // configure meta
   app: {
     head: {
-      title: 'Namada - stakepool',
+      title: 'Namanda - Stakepool & Crypto',
       htmlAttrs: {
         lang: 'en',
       },
@@ -17,12 +17,14 @@ export default defineNuxtConfig({
         {
           hid: 'description',
           name: 'description',
-          content: 'Namada - stakepool',
+          content: 'Namanda - Stakepool & Crypto',
         },
         { name: 'format-detection', content: 'telephone=no' },
       ],
       // link: [{ rel: 'icon', type: 'image/png', href: '/favicon.png' }]
     },
+    layoutTransition: { name: 'layout', mode: 'out-in' }, // out-in
+    pageTransition: { name: 'page', mode: 'out-in' },
   },
   // configure tailwind and css
   postcss: {
@@ -63,8 +65,14 @@ export default defineNuxtConfig({
     preload: true,
     download: true,
     base64: false,
-    families: {
-      Arimo: true,
-    },
+  },
+  // configure nuxt icon
+  nuxtIcon: {
+    size: '24px', // default <Icon> size applied
+    class: 'icon', // default <Icon> class applied
+  },
+  runtimeConfig: {
+    // The private keys which are only available within server-side
+    public: {},
   },
 })
