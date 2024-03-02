@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'shadcn-nuxt',
     '@nuxt/image',
+    '@pinia/nuxt',
   ],
   shadcn: {
     /**
@@ -73,6 +74,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     // The private keys which are only available within server-side
-    public: {},
+    public: {
+      RPC_URL: process.env.NUXT_PUBLIC_RPC_URL,
+      BASE_URL: process.env.NUXT_PUBLIC_BASE_URL
+    },
   },
 })

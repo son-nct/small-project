@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
+import { useAsyncData, useRuntimeConfig } from "#app";
 import {
   Table,
   TableBody,
@@ -8,69 +9,76 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
+} from "@/components/ui/table";
+import { useValidatorStore } from "~/stores/validators.store";
 // COMMIT SIGNATURES,	PARTICIPATION
 const header = [
-  'Validator',
-  'Moniker',
-  'Up Time',
-  'Voting Power',
-  'Commit Signatures',
-  'Participation',
-]
+  "Validator",
+  "Moniker",
+  "Up Time",
+  "Voting Power",
+  "Commit Signatures",
+  "Participation",
+];
 const invoices = [
   {
-    invoice: 'INV001',
-    paymentStatus: 'Paid',
-    totalAmount: '$250.00',
-    paymentMethod: 'Credit Card',
+    invoice: "INV001",
+    paymentStatus: "Paid",
+    totalAmount: "$250.00",
+    paymentMethod: "Credit Card",
   },
   {
-    invoice: 'INV002',
-    paymentStatus: 'Pending',
-    totalAmount: '$150.00',
-    paymentMethod: 'PayPal',
+    invoice: "INV002",
+    paymentStatus: "Pending",
+    totalAmount: "$150.00",
+    paymentMethod: "PayPal",
   },
   {
-    invoice: 'INV003',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$350.00',
-    paymentMethod: 'Bank Transfer',
+    invoice: "INV003",
+    paymentStatus: "Unpaid",
+    totalAmount: "$350.00",
+    paymentMethod: "Bank Transfer",
   },
   {
-    invoice: 'INV004',
-    paymentStatus: 'Paid',
-    totalAmount: '$450.00',
-    paymentMethod: 'Credit Card',
+    invoice: "INV004",
+    paymentStatus: "Paid",
+    totalAmount: "$450.00",
+    paymentMethod: "Credit Card",
   },
   {
-    invoice: 'INV005',
-    paymentStatus: 'Paid',
-    totalAmount: '$550.00',
-    paymentMethod: 'PayPal',
+    invoice: "INV005",
+    paymentStatus: "Paid",
+    totalAmount: "$550.00",
+    paymentMethod: "PayPal",
   },
   {
-    invoice: 'INV006',
-    paymentStatus: 'Pending',
-    totalAmount: '$200.00',
-    paymentMethod: 'Bank Transfer',
+    invoice: "INV006",
+    paymentStatus: "Pending",
+    totalAmount: "$200.00",
+    paymentMethod: "Bank Transfer",
   },
   {
-    invoice: 'INV007',
-    paymentStatus: 'Unpaid',
-    totalAmount: '$300.00',
-    paymentMethod: 'Credit Card',
+    invoice: "INV007",
+    paymentStatus: "Unpaid",
+    totalAmount: "$300.00",
+    paymentMethod: "Credit Card",
   },
-]
+];
 
-const searchValue = ref('')
+const searchValue = ref("");
+
+const currentPage = 1;
+const validatorStore = useValidatorStore();
+
+await useAsyncData("validators", () =>
+  validatorStore.fetchValidator(currentPage)
+);
 </script>
 
 <template lang="pug">
 main
     article
         section.bg-dark.relative.overflow-hidden
-            //- .absolute.inset-0.bg-pattern.bg-center.bg-no-repeat.bg-cover.bg-blend-overlay.mix-blend-overlay
             .container(class='z-10 p-8 mx-auto lg:p-10')
                   div(class='relative w-full h-fit rounded-3xl')
                       .flex.flex-col.items-center.justify-center.gap-10.w-full
