@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { useAsyncData, useRuntimeConfig } from "#app";
+import { onMounted, ref } from "vue";
+import { useAsyncData, useLazyAsyncData, useRuntimeConfig } from "#app";
+import { Loader2 } from 'lucide-vue-next'
+
 import {
   Table,
   TableBody,
@@ -13,6 +15,7 @@ import {
 import { useValidatorStore } from "~/stores/validators.store";
 // COMMIT SIGNATURES,	PARTICIPATION
 const header = [
+  "No",
   "Validator",
   "Moniker",
   "Up Time",
@@ -20,65 +23,36 @@ const header = [
   "Commit Signatures",
   "Participation",
 ];
-const invoices = [
-  {
-    invoice: "INV001",
-    paymentStatus: "Paid",
-    totalAmount: "$250.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV002",
-    paymentStatus: "Pending",
-    totalAmount: "$150.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV003",
-    paymentStatus: "Unpaid",
-    totalAmount: "$350.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV004",
-    paymentStatus: "Paid",
-    totalAmount: "$450.00",
-    paymentMethod: "Credit Card",
-  },
-  {
-    invoice: "INV005",
-    paymentStatus: "Paid",
-    totalAmount: "$550.00",
-    paymentMethod: "PayPal",
-  },
-  {
-    invoice: "INV006",
-    paymentStatus: "Pending",
-    totalAmount: "$200.00",
-    paymentMethod: "Bank Transfer",
-  },
-  {
-    invoice: "INV007",
-    paymentStatus: "Unpaid",
-    totalAmount: "$300.00",
-    paymentMethod: "Credit Card",
-  },
-];
 
 const searchValue = ref("");
+const currentPage = ref(1);
+const isLoading = ref(false)
 
-const currentPage = 1;
 const validatorStore = useValidatorStore();
 
-await useAsyncData("validators", () =>
-  validatorStore.fetchValidator(currentPage)
+if (validatorStore.allValidators.length === 0) {
+  const { data: allValidators } = await useAsyncData("all-validators", () =>
+    validatorStore.fetchValidatorList()
+  );
+}
+
+const { data: paginatedValidators } = await useAsyncData(
+  `validators-pagination-${currentPage.value}`,
+  () => validatorStore.paginationValidator(currentPage.value)
 );
+
+const loadMoreData = async () => {
+  isLoading.value = true
+  currentPage.value += 1
+  await validatorStore.paginationValidator(currentPage.value)
+  isLoading.value = false
+}
 </script>
 
 <template lang="pug">
 main
     article
-        section.bg-dark.relative.overflow-hidden
+        section.bg-dark.relative.overflow-hidden.min-h-screen
             .container(class='z-10 p-8 mx-auto lg:p-10')
                   div(class='relative w-full h-fit rounded-3xl')
                       .flex.flex-col.items-center.justify-center.gap-10.w-full
@@ -92,28 +66,35 @@ main
                           div.container.mx-auto
                             div(class='flex items-center justify-center w-full px-10')
                               Table.mt-3
-                                TableCaption.text-white A list of your recent invoices.
+                                //- TableCaption.text-white A list of your recent validators.
                                 TableHeader
                                     TableRow
                                         TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
                                             | {{ text }}
                                 TableBody
-                                    TableRow(v-for='invoice in invoices' :key='invoice.invoice')
+                                    TableRow(v-for='(validator,index) in validatorStore.validatorPagination' :key='validator.address')
+                                      TableCell.text-white {{ index }}
                                       TableCell.font-medium.text-white
-                                        | {{ invoice.invoice }}
-                                      TableCell.text-white {{ invoice.paymentStatus }}
-                                      TableCell.text-white {{ invoice.paymentMethod }}
-                                      TableCell.text-right.text-white {{ invoice.totalAmount }}
+                                        | {{ validator.address }}
+                                      TableCell.text-white {{ validator.moniker}}
+                                      TableCell.text-white {{ validator.uptime }}
+                                      TableCell.text-right.text-white {{ validator.voting_power }}
+                                      TableCell.text-right.text-white {{ validator.commitSignature }}
+                                      TableCell.text-right.text-white {{ validator.voting_percentage }}%
+                          Button.flex.items-center(@click='loadMoreData')
+                            span(class='-translate-y-[2px]')
+                              Loader2(class="w-4 h-4 mr-2 animate-spin" v-if='isLoading')
+                            | Load More                  
 </template>
 
 <style lang="scss" scoped>
-.roadmap-pagination {
-  .btn-pagination {
-    @apply w-4 h-1 bg-lightGray rounded-lg duration-300 ease-out cursor-pointer;
+// .roadmap-pagination {
+//   .btn-pagination {
+//     @apply w-4 h-1 bg-lightGray rounded-lg duration-300 ease-out cursor-pointer;
 
-    &.active {
-      @apply w-8 h-1 bg-black #{!important};
-    }
-  }
-}
+//     &.active {
+//       @apply w-8 h-1 bg-black #{!important};
+//     }
+//   }
+// }
 </style>

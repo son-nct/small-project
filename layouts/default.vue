@@ -8,7 +8,8 @@ div
   NuxtLoadingIndicator
   AppHeader
   slot
-  Toaster
+  ClientOnly
+    Toaster
 
 </template>
 

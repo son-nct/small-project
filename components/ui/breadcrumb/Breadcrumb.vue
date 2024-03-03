@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<!-- <script lang="ts" setup>
 withDefaults(
   defineProps<{
     home?: string
@@ -47,4 +47,4 @@ withDefaults(
   </nav>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped></style> -->
