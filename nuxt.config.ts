@@ -76,7 +76,7 @@ export default defineNuxtConfig({
     // The private keys which are only available within server-side
     public: {
       RPC_URL: process.env.NUXT_PUBLIC_RPC_URL,
-      BASE_URL: process.env.NUXT_PUBLIC_BASE_URL
+      BASE_URL: process.env.NUXT_PUBLIC_BASE_URL,
     },
   },
 })
