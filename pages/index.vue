@@ -1,7 +1,13 @@
+<script lang="ts" setup>
+definePageMeta({
+  middleware: ['navigate']
+})
+</script>
+
 <template>
-  <div>
-    <p>Home Page</p>
-  </div>
+  
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+  
+</style>

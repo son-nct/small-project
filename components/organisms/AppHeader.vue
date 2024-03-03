@@ -66,7 +66,7 @@ div
             .px-2.flex.items-center.justify-between
               ul.list-none.p-0.flex.w-full
                 li.inline-block.list-none.ml-7.text-white(v-for='(item,index) in navigator' :key='item')
-                  NuxtLink(:to='item.to' v-if='index % 2 !== 0').text-lightGray {{ item.text }}
+                  span(:to='item.to' v-if='item.text !== "Validators"').text-lightGray {{ item.text }}
                     span.link__style
                       | &nbsp;
                   NuxtLink.link(:to='item.to' v-else).text-white {{ item.text }}
