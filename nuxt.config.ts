@@ -4,6 +4,14 @@ export default defineNuxtConfig({
   imports: {
     autoImport: false,
   },
+  image: {
+    provider: 'ipx',
+    // ipx: {
+    //   modifiers: {
+    //     format: 'webp',
+    //   },
+    // },
+  },
   // configure meta
   app: {
     head: {
