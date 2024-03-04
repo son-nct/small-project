@@ -91,8 +91,8 @@ main
   article
     section.bg-dark.relative.overflow-hidden.min-h-screen
       .container(class='z-10 p-8 mx-auto lg:p-10')
-        .flex.flex-col.pl-6.w-full.mb-10.items-end
-          h3.text-primary.text-lg shielded-expedition.88f17d1d14
+        div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
+          h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
           p.text-neutralPink https://namada-rpc.validatorvn.com
         div(class='relative w-full h-fit rounded-3xl')
           .flex.flex-col.items-center.justify-center.gap-10.w-full
@@ -131,12 +131,5 @@ main
 </template>
 
 <style lang="scss" scoped>
-// .roadmap-pagination {
-//   .btn-pagination {
-//     @apply w-4 h-1 bg-lightGray rounded-lg duration-300 ease-out cursor-pointer;
 
-//     &.active {
-//       @apply w-8 h-1 bg-black #{!important};
-//     }
-//   }
-// }</style>
+</style>

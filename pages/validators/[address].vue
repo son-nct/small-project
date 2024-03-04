@@ -78,8 +78,8 @@ main
     article
         section.bg-dark
             .container(class='z-10 p-8 mx-auto lg:p-10')
-                .flex.flex-col.pl-6.w-full.mb-10.items-end
-                  h3.text-primary.text-lg shielded-expedition.88f17d1d14
+                div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
+                  h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
                   p.text-neutralPink https://namada-rpc.validatorvn.com
                 .element-section
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
@@ -92,7 +92,7 @@ main
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                             h2.uppercase.font-ultraBold.text-white.text-center(class='mb-10 text-5xl lg:text-6xl') 100 Blocks
                             ClientOnly
-                              div(class='flex flex-wrap items-center justify-start w-full gap-2 p-8 border border-neutral')
+                              div(class='flex flex-wrap items-center justify-start w-full gap-2 border lg:p-8 border-neutral')
                                   div.w-full.h-full.flex.items-center.justify-center(v-if='pending')
                                     Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
                                   TransitionGroup(name='block-list' tag='div' class='flex flex-wrap items-center justify-start w-full gap-2 p-8' v-else)

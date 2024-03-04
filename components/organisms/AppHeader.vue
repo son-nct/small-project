@@ -1,73 +1,58 @@
-<!-- <script lang="ts" setup></script>
-
-<template>
-  <header
-    class="relative flex items-center justify-start w-full h-20 px-4 mx-auto mt-4 border shadow-md border-slate-200 px- rounded-3xl"
-  >
-    <NuxtImg src="/imgs/svg/radar.svg" class="w-8" />
-    <div class="flex flex-col justify-center pl-2">
-      <p class="font-bold">shielded-expedition.88f17d1d14</p>
-      <p class="text-sm">https://rpc.namada.stakeup.tech</p>
-    </div>
-  </header>
-</template>
-
-<style lang="scss" scoped></style> -->
 <script setup lang="ts">
-import { provide, ref } from 'vue'
-import { useHead } from '#imports'
+import { provide, ref } from "vue";
+import { useHead } from "#imports";
 
-import { Input } from '@/components/ui/input'
-import { useRouter } from 'vue-router';
+import { Input } from "@/components/ui/input";
+import { useRouter } from "vue-router";
+import AppSideBarMobile from "./AppSideBarMobile.vue";
 
-const searchAddr = ref('')
+const searchAddr = ref("");
 
 const head = useHead({
   script: [
     {
-      hid: 'stripe',
-      src: 'https://cryptorank.io/widget/marquee.js',
+      hid: "stripe",
+      src: "https://cryptorank.io/widget/marquee.js",
       defer: true,
     },
   ],
-})
+});
 
-const openMobileMenu = ref(false)
-provide('openMobileMenuState', openMobileMenu)
+const openMobileMenu = ref(false);
+provide("openMobileMenuState", openMobileMenu);
 
 const toggleMobileMenu = () => {
-  openMobileMenu.value = !openMobileMenu.value
-}
+  openMobileMenu.value = !openMobileMenu.value;
+};
 
 const navigator = [
   {
-    text: 'Home',
-    to: '/',
+    text: "Home",
+    to: "/",
   },
   {
-    text: 'Blocks',
-    to: '/blocks',
+    text: "Blocks",
+    to: "/blocks",
   },
   {
-    text: 'Validators',
-    to: '/validators',
+    text: "Validators",
+    to: "/validators",
   },
   {
-    text: 'Transaction',
-    to: '/transaction',
+    text: "Transaction",
+    to: "/transaction",
   },
-]
+];
 
-const router = useRouter()
+const router = useRouter();
 
 const navigateToAddress = () => {
   router.push({
-    name: 'validators-address',
-    params: { address : searchAddr.value }
-  })
-  searchAddr.value = ''
-}
-
+    name: "validators-address",
+    params: { address: searchAddr.value },
+  });
+  searchAddr.value = "";
+};
 </script>
 
 <template lang="pug">
@@ -77,8 +62,8 @@ div
       #cr-widget-marquee(data-coins='ethereum,lido-staked-ether,aleph-zero,injective-protocol,sei-network,cosmos,sui,aptos,matic-network,avalanche,kava,celestia,agoric' data-theme='dark' data-show-symbol='true' data-show-icon='true' data-show-period-change='true' data-period-change='24H' data-api-url='https://api.cryptorank.io/v0')
     section(class='bg-dark').p-8.w-full.mx-auto
       div.container.mx-auto
-        div.flex.items-center
-          div(class='w-1/3 lg:block')
+        div(class='flex items-center')
+          div(class='hidden w-1/3 lg:block')
             .px-2.flex.items-center.justify-between
               ul.list-none.p-0.flex.w-full
                 li.inline-block.list-none.ml-7.text-white(v-for='(item,index) in navigator' :key='item')
@@ -90,12 +75,15 @@ div
                       | &nbsp;
 
           div(class='flex items-center justify-start w-1/3 text-white lg:justify-center')
-          div(class='w-2/3 lg:w-1/3').flex.justify-end.items-end
-            .relative.w-full.items-center
+          div(class='w-2/3 lg:w-full').flex.justify-end.items-end
+            .relative.w-full.items-center(class='hidden lg:flex')
               input(class='w-full placeholder:text-primary' v-model='searchAddr' @keyup.enter='navigateToAddress')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Search by address...')
               span.absolute.start-0.inset-y-0.flex.items-center.justify-center.px-2(@click='')
                 Icon(@click='navigateToAddress' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
-  //- AppSidebarMobile
+
+            div(class='w-2/3 lg:w-1/3').flex.justify-end
+              NuxtImg(src='/imgs/svg/menu.svg' alt='Logo' width='19' height='14' class='w-10' loading='lazy' class='block lg:hidden' @click='toggleMobileMenu')
+  AppSideBarMobile
 
                 
                 

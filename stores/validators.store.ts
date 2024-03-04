@@ -178,6 +178,7 @@ export const useValidatorStore = defineStore("validators", {
         delete updatedValidator["pub_key"];
         delete updatedValidator["proposer_priority"];
         delete updatedValidator["voting_percentage"];
+        delete updatedValidator["operator_address"];
         return updatedValidator;
       } catch (error) {
         console.error("Error fetching details for validator:", error);
