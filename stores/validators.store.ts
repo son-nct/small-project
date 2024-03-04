@@ -46,6 +46,12 @@ export const useValidatorStore = defineStore("validators", {
         this.showErrToast("fetchValidatorList");
       }
     },
+    addressExists(searchAddress: string) {
+      return this.allValidators.some(
+        (validator) =>
+          validator.address.toLowerCase() === searchAddress.trim().toLowerCase()
+      );
+    },
     async paginationValidator(page: number, searchValue = "") {
       this.currentPage = page;
       const start = (page - 1) * this.pageSize;
@@ -140,6 +146,7 @@ export const useValidatorStore = defineStore("validators", {
       return this.currentPage * this.pageSize < filteredValidators.length;
     },
     async fetchValidatorDetail(address: string) {
+      if (!this.addressExists(address)) return;
       if (!address.trim()) return null;
 
       const validatorIndex = this.allValidators.findIndex(
@@ -156,7 +163,7 @@ export const useValidatorStore = defineStore("validators", {
       const validator = this.allValidators[validatorIndex];
 
       try {
-        const [uptime, commitSignature] = await Promise.all([
+        const [uptime, commit_signature] = await Promise.all([
           this.fetchValidatorUptime(address),
           this.fetchValidatorSignature(address),
         ]);
@@ -164,11 +171,13 @@ export const useValidatorStore = defineStore("validators", {
         const updatedValidator = {
           ...validator,
           uptime,
-          commitSignature,
-          voting_percentage:
+          commit_signature,
+          participation:
             parseFloat((validator.voting_percentage ?? 0).toFixed(2)) + "%",
         };
         delete updatedValidator["pub_key"];
+        delete updatedValidator["proposer_priority"];
+        delete updatedValidator["voting_percentage"];
         return updatedValidator;
       } catch (error) {
         console.error("Error fetching details for validator:", error);
@@ -178,16 +187,33 @@ export const useValidatorStore = defineStore("validators", {
     },
     async fetchBlocksByAddress(address: string) {
       try {
+        if (!this.addressExists(address)) return;
         const url = `https://namada-explorer-api.stakepool.dev.br/node/validators/validator/${address}/latestSignatures`;
         const { data, error } = await useFetch(`${url}`);
 
         if (data.value) {
-          return data.value
+          return data.value;
         } else if (error.value) {
-          this.showErrToast("fetching validator list");
+          this.showErrToast("fetch blocks");
         }
       } catch (error) {
-        this.showErrToast("fetchValidatorList");
+        this.showErrToast("fetch blocks");
+      }
+    },
+    async fetchLatestSignatures(address: string) {
+      try {
+        if (!this.addressExists(address)) return;
+
+        const apiUrl = `https://namada-explorer-api.stakepool.dev.br/node/validators/validator/${address}/latestSignatures`;
+        const { data, error } = await useFetch(`${apiUrl}`);
+
+        if (data.value) {
+          return data.value
+        } else if (error.value) {
+          this.showErrToast("fetch latest block");
+        }
+      } catch (error) {
+        this.showErrToast("fetch latest block");
       }
     },
   },

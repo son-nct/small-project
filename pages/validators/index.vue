@@ -69,7 +69,6 @@ const hasValidatorData = computed(
 const router = useRouter()
 
 const navigateToAddress = (address: string) => {
-  console.log('address: ', address)
   router.push({
     name: 'validators-address',
     params: { address }

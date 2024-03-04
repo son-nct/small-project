@@ -17,6 +17,11 @@
 import { provide, ref } from 'vue'
 import { useHead } from '#imports'
 
+import { Input } from '@/components/ui/input'
+import { useRouter } from 'vue-router';
+
+const searchAddr = ref('')
+
 const head = useHead({
   script: [
     {
@@ -52,6 +57,17 @@ const navigator = [
     to: '/transaction',
   },
 ]
+
+const router = useRouter()
+
+const navigateToAddress = () => {
+  router.push({
+    name: 'validators-address',
+    params: { address : searchAddr.value }
+  })
+  searchAddr.value = ''
+}
+
 </script>
 
 <template lang="pug">
@@ -74,11 +90,11 @@ div
                       | &nbsp;
 
           div(class='flex items-center justify-start w-1/3 text-white lg:justify-center')
-            //- img(src='~/assets/imgs/logo.svg' alt='Logo' width='207' height='32' class='w-10' loading='lazy')
-
-          div(class='w-2/3 lg:w-1/3').flex.justify-end
-            //- AtomsCustomButton(type='small' class='cursor-not-allowed' class='hidden lg:block') Login
-            //- img(src='~/assets/imgs/icons/menu.svg' alt='Logo' width='19' height='14' class='w-10' loading='lazy' class='block lg:hidden' @click='toggleMobileMenu')
+          div(class='w-2/3 lg:w-1/3').flex.justify-end.items-end
+            .relative.w-full.items-center
+              input(class='w-full placeholder:text-primary' v-model='searchAddr' @keyup.enter='navigateToAddress')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Search by address...')
+              span.absolute.start-0.inset-y-0.flex.items-center.justify-center.px-2(@click='')
+                Icon(@click='navigateToAddress' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
   //- AppSidebarMobile
 
                 
