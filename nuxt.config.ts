@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     autoImport: false,
   },
   image: {
-    provider: 'ipx',
+    provider: 'netlify',
     // ipx: {
     //   modifiers: {
     //     format: 'webp',
