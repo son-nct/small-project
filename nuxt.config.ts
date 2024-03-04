@@ -6,11 +6,6 @@ export default defineNuxtConfig({
   },
   image: {
     provider: 'netlify',
-    // ipx: {
-    //   modifiers: {
-    //     format: 'webp',
-    //   },
-    // },
   },
   // configure meta
   app: {

@@ -8,15 +8,15 @@ import AppSideBarMobile from "./AppSideBarMobile.vue";
 
 const searchAddr = ref("");
 
-const head = useHead({
-  script: [
-    {
-      hid: "stripe",
-      src: "https://cryptorank.io/widget/marquee.js",
-      defer: true,
-    },
-  ],
-});
+// const head = useHead({
+//   script: [
+//     {
+//       hid: "stripe",
+//       src: "https://cryptorank.io/widget/marquee.js",
+//       defer: true,
+//     },
+//   ],
+// });
 
 const openMobileMenu = ref(false);
 provide("openMobileMenuState", openMobileMenu);
@@ -59,7 +59,7 @@ const navigateToAddress = () => {
 div
   header.relative.z-10
     section.bg-black
-      #cr-widget-marquee(data-coins='ethereum,lido-staked-ether,aleph-zero,injective-protocol,sei-network,cosmos,sui,aptos,matic-network,avalanche,kava,celestia,agoric' data-theme='dark' data-show-symbol='true' data-show-icon='true' data-show-period-change='true' data-period-change='24H' data-api-url='https://api.cryptorank.io/v0')
+      //- #cr-widget-marquee(data-coins='ethereum,lido-staked-ether,aleph-zero,injective-protocol,sei-network,cosmos,sui,aptos,matic-network,avalanche,kava,celestia,agoric' data-theme='dark' data-show-symbol='true' data-show-icon='true' data-show-period-change='true' data-period-change='24H' data-api-url='https://api.cryptorank.io/v0')
     section(class='bg-dark').p-8.w-full.mx-auto
       div.container.mx-auto
         div(class='flex items-center')

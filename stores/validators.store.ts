@@ -144,6 +144,7 @@ export const useValidatorStore = defineStore("validators", {
           )
         : this.allValidators;
       return this.currentPage * this.pageSize < filteredValidators.length;
+      // return true;
     },
     async fetchValidatorDetail(address: string) {
       if (!this.addressExists(address)) return;
