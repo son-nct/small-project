@@ -123,7 +123,7 @@ main
                                   TableCell.text-white {{ index + 1 }}
                                   TableCell.font-semibold.text-primary   {{ block.tx_type }}
                                     //- NuxtLink(:to='navigateToBlockDetail(block.height)') {{ block.tx_type }}
-                                  TableCell.text-white {{ block.hash_id }}
+                                  TableCell.text-white {{ block.hash_id }} 
                                     //- NuxtLink(:to='navigateToTransactionDetail(block.hash_id)') {{ block.hash_id }}
                             
                     
