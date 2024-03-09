@@ -44,7 +44,8 @@ const { data: transactions, pending } = await useAsyncData(
   () => transactionStore.fetchLatestTransactionList()
 );
 
-
+const hasTransactionData = computed(() => transactionStore.latestTransaction.length > 0);
+ 
 const navigateToBlockDetail = (height: string) => {
   if (!height) return {};
   return {
@@ -92,31 +93,31 @@ main
                   input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Block Height/Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
                 button(type='button' class='hidden w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14 lg:block' @click='debouncedUpdateProducts') Search
             div(class='w-full lg:container lg:mx-auto')
-              div.w-full.h-full.flex.items-center.justify-center(v-if='pending')
-                Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
-              div(class='flex items-center justify-center w-full lg:px-10' v-else)
+              div(class='flex items-center justify-center w-full lg:px-10')
                 ClientOnly
-                  Table.mt-3(v-if='hasTransactionData' :key='forceUpdate')
-                    //TableCaption.text-white.text-lg
-                    TableHeader
-                      TableRow
-                        TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
-                          | {{ text }}
-                    TableBody
-                      TableRow(v-for='(transaction,index) in transactionStore.latestTransaction' :key='transaction.tx' class='cursor-pointer')
-                        TableCell.text-white {{ index + 1 }}
-                        TableCell.font-semibold.text-primary {{ trunCateText(transaction.tx) }}
-                        TableCell.font-semibold.text-primary
-                             NuxtLink(:to='navigateToBlockDetail(transaction.height)') {{ transaction.height }}
-                            
-                        TableCell.text-white {{ transaction.type }}
-                        TableCell.text-white {{ transaction.shielded }}
-                        TableCell.text-white
-                            Badge(variant="outline" v-if='transaction.status === "Fail"').border-red-500.text-red-500
-                                | {{ transaction.status }}
-                            Badge(variant="outline" v-else).border-green-500.text-primary
-                                | {{ transaction.status }}
-                        TableCell.text-white {{ transaction.time }}
+                    div.w-full.h-full.flex.items-center.justify-center(v-if='pending')
+                        Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
+                    Table.mt-3(v-if='hasTransactionData' :key='forceUpdate')
+                        //TableCaption.text-white.text-lg
+                        TableHeader
+                            TableRow
+                                TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
+                                    | {{ text }}
+                        TableBody
+                            TableRow(v-for='(transaction,index) in transactionStore.latestTransaction' :key='transaction.tx' class='cursor-pointer')
+                                TableCell.text-white {{ index + 1 }}
+                                TableCell.font-semibold.text-primary {{ trunCateText(transaction.tx) }}
+                                TableCell.font-semibold.text-primary
+                                        NuxtLink(:to='navigateToBlockDetail(transaction.height)') {{ transaction.height }}
+                                    
+                                TableCell.text-white {{ transaction.type }}
+                                TableCell.text-white {{ transaction.shielded }}
+                                TableCell.text-white
+                                    Badge(variant="outline" v-if='transaction.status === "Fail"').border-red-500.text-red-500
+                                        | {{ transaction.status }}
+                                    Badge(variant="outline" v-else).border-green-500.text-primary
+                                        | {{ transaction.status }}
+                                TableCell.text-white {{ transaction.time }}
 </template>
 
 <style lang="scss" scoped></style>

@@ -78,7 +78,7 @@ const navigateToValidatorDetail = (address: string) => {
   };
 };
 
-const { data: blocks, pending } = await useLazyAsyncData("latest-block", () =>
+const { data: blocks, pending } = await useAsyncData("latest-block", () =>
   blockStore.fetchLatestBlocksList()
 );
 
