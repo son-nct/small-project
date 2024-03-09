@@ -69,6 +69,14 @@ const isExistHashData = computed(
   () => block.value && block.value.tx_hashes.length > 0
 );
 
+const navigateToValidatorDetail = (address: string) => {
+  if (!address) return {};
+  return {
+    name: "validators-address",
+    params: { address },
+  };
+};
+
 const formatString = (input: string): string => {
   const trimmedInput = input.trim();
   const words = trimmedInput.split("_");
@@ -102,6 +110,9 @@ main
                             template(v-if='key === "time"')
                               h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
                               p.text-center.text-neutralPink.text-lg.tracking-tight.break-words {{ `${value} ( ${dateTime })` }}
+                            template(v-else-if='key === "proposer"')
+                              h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                              NuxtLink(:to='navigateToValidatorDetail(value)').text-center.text-primary.text-lg.tracking-tight.break-words {{ value }}
                             template(v-else)
                               h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
                               p.text-center.text-neutralPink.text-lg.tracking-tight.break-words {{ value }}
