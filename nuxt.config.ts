@@ -80,6 +80,7 @@ export default defineNuxtConfig({
     public: {
       RPC_URL: process.env.NUXT_PUBLIC_RPC_URL,
       BASE_URL: process.env.NUXT_PUBLIC_BASE_URL,
+      NAMANDA_BASE_URL: process.env.NUXT_PUBLIC_NAMANDA_BASE_URL
     },
   },
 })

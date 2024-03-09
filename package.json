@@ -43,6 +43,7 @@
     "@vueuse/core": "^10.9.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "javascript-time-ago": "^2.5.9",
     "lucide-vue-next": "^0.344.0",
     "pinia": "^2.1.7",
     "radix-vue": "^1.4.9",
