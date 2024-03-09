@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, watch, computed, onUnmounted, reactive } from "vue";
-import { useAsyncData } from "#app";
+import { useAsyncData, useLazyAsyncData } from "#app";
 import { Loader2 } from "lucide-vue-next";
 import _ from "lodash";
 import {
@@ -27,7 +27,7 @@ const searchValue = ref("");
 const currentPage = ref(1);
 const isLoading = ref(false);
 const isSearching = ref(false);
-let forceUpdate = ref(1);
+const forceUpdate = ref(1);
 
 const blockStore = useBlocksStore();
 const paginationData = reactive({
@@ -78,44 +78,14 @@ const navigateToValidatorDetail = (address: string) => {
   };
 };
 
-const { data: blocks } = await useAsyncData("latest-block", () =>
+const { data: blocks, pending } = await useLazyAsyncData("latest-block", () =>
   blockStore.fetchLatestBlocksList()
 );
 
 updateLatestData(blocks.value);
 updatePaginatedBlock();
 
-console.log("paginationData: ", paginationData);
-
-// const { data: paginatedValidators } = await useAsyncData(
-//   `validators-pagination-${currentPage.value}`,
-//   () => validatorStore.paginationValidator(currentPage.value)
-// );
-
-// const isShowLoadMore = () => {
-//   return validatorStore.shouldShowLoadMore(searchValue.value);
-// };
-
-// const loadMoreData = async () => {
-//   isLoading.value = true;
-//   currentPage.value += 1;
-//   await validatorStore.paginationValidator(currentPage.value);
-//   isLoading.value = false;
-// };
-
-// const paginatedValidatorsBySearch = async () => {
-//   currentPage.value = 1;
-//   await validatorStore.paginationValidator(
-//     currentPage.value,
-//     searchValue.value
-//   );
-//   isSearching.value = false;
-// };
-// const debouncedUpdateProducts = _.debounce(paginatedValidatorsBySearch, 500);
-
 const hasBlocksData = computed(() => blockStore.latestBlocks.length > 0);
-
-const router = useRouter();
 
 const navigateToBlockDetail = (height: string) => {
   if (!height) return {};
@@ -132,23 +102,6 @@ const trunCateText = (text: string) => {
   return truncateText(text, startChars, endCharts);
 };
 
-// watch(
-//   () => searchValue.value,
-//   (newVal: string) => {
-//     isSearching.value = true;
-//     validatorStore.validatorPagination = [];
-//     debouncedUpdateProducts();
-//   }
-// );
-
-// const listPageSize = [10, 20, 50];
-
-// const changePageSize = async (numberSize: number) => {
-//   isSearching.value = true;
-//   validatorStore.pageSize = numberSize;
-//   await validatorStore.paginationValidator(1);
-//   isSearching.value = false;
-// };
 let fetchInterval = null;
 
 onMounted(() => {
@@ -183,34 +136,31 @@ main
                   input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Block Height/Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
                 button(type='button' class='hidden w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14 lg:block' @click='debouncedUpdateProducts') Search
             div(class='w-full lg:container lg:mx-auto')
-              div.w-full.h-full.flex.items-center.justify-center(v-if='isSearching')
+              div.w-full.h-full.flex.items-center.justify-center(v-if='pending')
                 Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
               div(class='flex items-center justify-center w-full lg:px-10' v-else)
-                Table.mt-3(v-if='hasBlocksData' :key='forceUpdate')
-                  TableCaption.text-white.text-lg {{ paginationData.start }} - {{ paginationData.end }} of 50
-                  TableHeader
-                    TableRow
-                      TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
-                        | {{ text }}
-                  TableBody
-                    TableRow(v-for='(block,index) in paginationData.data' :key='block.hash' class='cursor-pointer')
-                      TableCell.text-white {{ paginationData.start + index }}
-                      TableCell.font-semibold.text-primary
-                        NuxtLink(:to='navigateToBlockDetail(block.height)') {{ block.height }}
-                      TableCell.text-white {{ trunCateText(block.hash) }}
-                      TableCell.text-white {{ block.txs }}
-                      TableCell.font-semibold.text-primary
-                        NuxtLink(:to='navigateToValidatorDetail(block.proposer)') {{ block.proposer }}
-                      TableCell.text-white {{ block.time }}
+                ClientOnly
+                  Table.mt-3(v-if='hasBlocksData' :key='forceUpdate')
+                    TableCaption.text-white.text-lg {{ paginationData.start }} - {{ paginationData.end }} of 50
+                    TableHeader
+                      TableRow
+                        TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
+                          | {{ text }}
+                    TableBody
+                      TableRow(v-for='(block,index) in paginationData.data' :key='block.hash' class='cursor-pointer')
+                        TableCell.text-white {{ paginationData.start + index }}
+                        TableCell.font-semibold.text-primary
+                          NuxtLink(:to='navigateToBlockDetail(block.height)') {{ block.height }}
+                        TableCell.text-white {{ trunCateText(block.hash) }}
+                        TableCell.text-white {{ block.txs }}
+                        TableCell.font-semibold.text-primary
+                          NuxtLink(:to='navigateToValidatorDetail(block.proposer)') {{ block.proposer }}
+                        TableCell.text-white {{ block.time }}
             div.flex.items-center.justify-center.gap-4.w-full(v-if='hasBlocksData')
               Button(class='hover:bg-primary group border-primary' @click='updateCurrentPage("prev")').bg-transparent(variant='outline' size='icon')
                 ChevronLeft(class='group-hover:text-black').text-primary.w-5.h-5
               Button(class='hover:bg-primary group border-primary' @click='updateCurrentPage("next")').bg-transparent(variant='outline' size='icon')
                 ChevronRight(class='group-hover:text-black').text-primary.w-5.h-5
-              //- Button.flex.items-center(@click='loadMoreData' v-if='!isSearching')
-              //-   span(class='-translate-y-[2px]')
-              //-     Loader2(class="w-4 h-4 mr-2 animate-spin" v-if='isLoading')
-              //-   | Load More
             h3(v-if='!isSearching && !hasBlocksData').font-ultraBold.text-white.text-center.text-3xl  No Data Found         
 </template>
 

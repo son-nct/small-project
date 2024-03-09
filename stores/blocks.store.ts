@@ -1,13 +1,8 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
 import { useFetch, useNuxtApp, useRuntimeConfig } from "#app";
 import { h } from "vue";
-import type { Validator } from "@/models/validator.ts";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-// import TimeAgo from 'javascript-time-ago'
-
-// import en from 'javascript-time-ago/locale/en'
-// TimeAgo.addDefaultLocale(en)
 
 interface Block {
   block_id: string;

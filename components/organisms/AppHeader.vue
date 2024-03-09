@@ -39,8 +39,8 @@ const navigator = [
     to: "/validators",
   },
   {
-    text: "Transaction",
-    to: "/transaction",
+    text: "Transactions",
+    to: "/transactions",
   },
 ];
 
