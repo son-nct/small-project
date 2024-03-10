@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, onUnmounted, reactive } from 'vue'
-import { useAsyncData, useLazyAsyncData } from '#app'
-import { Loader2 } from 'lucide-vue-next'
-import _ from 'lodash'
+import { onMounted, ref, computed, onUnmounted, reactive } from 'vue'
+import { useAsyncData } from '#app'
 import { useRouter } from 'vue-router'
 import { Badge } from '@/components/ui/badge'
+import { Loader2, ChevronRight, ChevronLeft } from "lucide-vue-next";
 
 import {
   Table,
@@ -23,13 +22,14 @@ const header = ['No', 'Tx', 'Height', 'Type', 'Shielded', 'Status', 'Time']
 
 const searchValue = ref('')
 const isLoading = ref(false)
-const isSearching = ref(false)
+const isLoadingInterval = ref(false)
 const forceUpdate = ref(1)
-const latestBlockId = ref('')
-const latestHeight = ref(0)
-const latestTime = ref('')
 
 const transactionStore = useTransactionStore()
+
+const forceUpdateUI = () => {
+  forceUpdate.value += 1;
+};
 
 const navigateToValidatorDetail = (address: string) => {
   if (!address) return {}
@@ -38,6 +38,33 @@ const navigateToValidatorDetail = (address: string) => {
     params: { address },
   }
 }
+
+const setLoading = (status: boolean) => (isLoading.value = status);
+
+const updateCurrentPage = async (type: string) => {
+  if (isLoading.value) return
+  switch (type) {
+    case "next":
+      if (transactionStore.currentPage * transactionStore.pageSize < transactionStore.totalData) {
+        setLoading(true);
+        transactionStore.currentPage += 1;
+        await transactionStore.fetchLatestTransactionList();
+        forceUpdateUI();
+      }
+      break;
+    case "prev":
+      if (transactionStore.currentPage > 1) {
+        setLoading(true);
+        transactionStore.currentPage -= 1;
+        await transactionStore.fetchLatestTransactionList();
+        forceUpdateUI();
+      }
+      break;
+    default:
+      break;
+  }
+  setLoading(false);
+};
 
 const { data: transactions, pending } = await useAsyncData(
   'latest-transactions',
@@ -84,8 +111,12 @@ let fetchInterval = null
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    await transactionStore.fetchLatestTransactionList()
-    forceUpdate.value += 1
+    if (transactionStore.currentPage === 1 && !pending.value && !isLoadingInterval.value) {
+      isLoadingInterval.value = true
+      await transactionStore.fetchLatestTransactionList()
+      forceUpdateUI()
+      isLoadingInterval.value = false
+    }
   }, 4000)
 })
 
@@ -101,11 +132,11 @@ main
       .container(class='z-10 p-8 mx-auto lg:p-10')
         div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
           h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
-          p.text-neutralPink https://namada-rpc.validatorvn.com
+          a(href='https://namada-rpc.validatorvn.com' target="_blank").text-neutralPink https://namada-rpc.validatorvn.com
         div(class='relative w-full h-fit rounded-3xl')
           .flex.flex-col.items-center.justify-center.gap-10.w-full
             h2.uppercase.font-ultraBold.text-white.text-center
-              | Latest 10 Transactions
+              | Transactions
             div(class='flex flex-col items-center w-full space-y-5 lg:space-y-0 lg:flex-row')
               div.flex.w-full.items-center.justify-center
                 div(class='w-full lg:w-1/3').border.border-primary.h-14
@@ -116,15 +147,18 @@ main
                 ClientOnly
                     div.w-full.h-full.flex.items-center.justify-center(v-if='pending')
                         Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
-                    Table.mt-3(v-if='hasTransactionData' :key='forceUpdate')
-                        //TableCaption.text-white.text-lg
+                    Table.my-3(v-if='hasTransactionData' :key='forceUpdate')
+                        div(class='z-50 bg-black/80' v-if='isLoading').absolute.w-full.h-full
+                          div.w-full.h-full.flex.items-center.justify-center
+                            Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
+                        TableCaption.text-white.text-lg {{ ((transactionStore.currentPage - 1 ) * transactionStore.pageSize) + 1 }} - {{ transactionStore.currentPage * transactionStore.pageSize }} of {{ transactionStore.totalData }}
                         TableHeader
                             TableRow
                                 TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
                                     | {{ text }}
                         TableBody
                             TableRow(v-for='(transaction,index) in transactionStore.latestTransaction' :key='transaction.tx' class='cursor-pointer')
-                                TableCell.text-white {{ index + 1 }}
+                                TableCell.text-white {{ (transactionStore.currentPage * transactionStore.pageSize) + index + 1 - transactionStore.pageSize }}
                                 TableCell.font-semibold.text-primary
                                   NuxtLink(:to='navigateToTransactionDetail(transaction.tx)') {{ trunCateText(transaction.tx) }}
                                 TableCell.font-semibold.text-primary
@@ -138,6 +172,11 @@ main
                                     Badge(variant="outline" v-else).border-green-500.text-primary
                                         | {{ transaction.status }}
                                 TableCell.text-white {{ transaction.time }}
+              div.flex.items-center.justify-center.gap-4.w-full.mt-10
+                Button(class='hover:bg-primary group border-primary' @click='updateCurrentPage("prev")').bg-transparent(variant='outline' size='icon')
+                  ChevronLeft(class='group-hover:text-black').text-primary.w-5.h-5
+                Button(class='hover:bg-primary group border-primary' @click='updateCurrentPage("next")').bg-transparent(variant='outline' size='icon')
+                  ChevronRight(class='group-hover:text-black').text-primary.w-5.h-5
 </template>
 
 <style lang="scss" scoped></style>

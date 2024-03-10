@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, onUnmounted, reactive } from 'vue'
-import { useAsyncData, useLazyAsyncData } from '#app'
-import { Loader2, ChevronRight, ChevronLeft } from 'lucide-vue-next'
-import _ from 'lodash'
-import { useRouter } from 'vue-router'
+import { onMounted, ref, computed, onUnmounted, reactive } from "vue";
+import { useAsyncData } from "#app";
+import { Loader2, ChevronRight, ChevronLeft } from "lucide-vue-next";
+import { useRouter } from "vue-router";
 import {
   Table,
   TableBody,
@@ -12,117 +11,114 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { useBlocksStore } from "~/stores/blocks.store";
+import { useUtils } from "~/composables/useUtils";
 
-import { useBlocksStore } from '~/stores/blocks.store'
-import { useUtils } from '~/composables/useUtils'
+const header = ["No", "Height", "Hash", "Txs", "Proposer", "Time"];
 
-const header = ['No', 'Height', 'Hash', 'Txs', 'Proposer', 'Time']
+const searchValue = ref("");
+const isLoading = ref(false);
+const forceUpdate = ref(1);
 
-const searchValue = ref('')
-const currentPage = ref(1)
-const isLoading = ref(false)
-const isSearching = ref(false)
-const forceUpdate = ref(1)
+const blockStore = useBlocksStore();
 
-const blockStore = useBlocksStore()
-const paginationData = reactive({
-  start: 1,
-  end: 10,
-  totalPage: 5,
-  data: [] as any[],
-})
-
-const updateLatestData = (newData: any) => {
+const updateLatestData = async (newData: any) => {
   blockStore.latestBlocks = newData.map((block: any) => ({
     ...blockStore.normalizeBlockData(block),
-  }))
-}
+  }));
+};
 
-const updatePaginatedBlock = () => {
-  const { start, end, data, totalPage } = blockStore.paginatedBlocks()
-  paginationData.start = start
-  paginationData.end = end
-  paginationData.totalPage = totalPage
-  paginationData.data = data
-}
+const forceUpdateUI = () => {
+  forceUpdate.value += 1;
+};
+const setLoading = (status: boolean) => (isLoading.value = status);
 
-const updateCurrentPage = (type: string) => {
+const updateCurrentPage = async (type: string) => {
+  let newData = [];
+  if (isLoading.value) return
   switch (type) {
-    case 'next':
-      if (blockStore.currentPage < paginationData.totalPage) {
-        blockStore.currentPage += 1
+    case "next":
+      if (blockStore.currentPage * blockStore.pageSize < blockStore.totalData) {
+        setLoading(true);
+        blockStore.currentPage += 1;
+        newData = await blockStore.fetchLatestBlocksList();
+        updateLatestData(newData);
+        forceUpdateUI();
       }
-      break
-    case 'prev':
+      break;
+    case "prev":
       if (blockStore.currentPage > 1) {
-        blockStore.currentPage -= 1
+        setLoading(true);
+        blockStore.currentPage -= 1;
+        newData = await blockStore.fetchLatestBlocksList();
+        updateLatestData(newData);
+        forceUpdateUI();
       }
-      break
+      break;
     default:
-      break
+      break;
   }
-  updatePaginatedBlock()
-  forceUpdate.value += 1
-}
+  setLoading(false);
+};
 
 const navigateToValidatorDetail = (address: string) => {
-  if (!address) return {}
+  if (!address) return {};
   return {
-    name: 'validators-address',
+    name: "validators-address",
     params: { address },
-  }
-}
+  };
+};
 
-const { data: blocks, pending } = await useAsyncData('latest-block', () =>
-  blockStore.fetchLatestBlocksList(),
-)
+const { data: blocks, pending } = await useAsyncData("latest-block", () =>
+  blockStore.fetchLatestBlocksList()
+);
 
-updateLatestData(blocks.value)
-updatePaginatedBlock()
+await updateLatestData(blocks.value);
 
-const hasBlocksData = computed(() => blockStore.latestBlocks.length > 0)
+const hasBlocksData = computed(() => blockStore.latestBlocks.length > 0);
 
 const navigateToBlockDetail = (height: string) => {
-  if (!height) return {}
+  if (!height) return {};
   return {
-    name: 'blocks-height',
+    name: "blocks-height",
     params: { height },
-  }
-}
+  };
+};
 
-const router = useRouter()
+const router = useRouter();
 
 const searchByBlockHeight = () => {
-  if (searchValue.value.trim().length === 0) return
+  if (searchValue.value.trim().length === 0) return;
   router.push({
-    name: 'blocks-height',
+    name: "blocks-height",
     params: { height: searchValue.value },
-  })
-}
+  });
+};
 
 const trunCateText = (text: string) => {
-  const { truncateText } = useUtils()
-  const startChars = 7
-  const endCharts = 5
-  return truncateText(text, startChars, endCharts)
-}
+  const { truncateText } = useUtils();
+  const startChars = 7;
+  const endCharts = 5;
+  return truncateText(text, startChars, endCharts);
+};
 
-let fetchInterval = null
+let fetchInterval = null;
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    const newData = await blockStore.fetchLatestBlocksList()
-    updateLatestData(newData)
-    updatePaginatedBlock()
-    forceUpdate.value += 1
-  }, 4000)
-})
+    if (blockStore.currentPage === 1) {
+      const newData = await blockStore.fetchLatestBlocksList();
+      updateLatestData(newData);
+      forceUpdateUI();
+    }
+  }, 4000);
+});
 
 onUnmounted(() => {
-  clearInterval(fetchInterval)
-})
+  clearInterval(fetchInterval);
+});
 </script>
 
 <template lang="pug">
@@ -132,7 +128,7 @@ main
       .container(class='z-10 p-8 mx-auto lg:p-10')
         div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
           h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
-          p.text-neutralPink https://namada-rpc.validatorvn.com
+          a(href='https://namada-rpc.validatorvn.com' target="_blank").text-neutralPink https://namada-rpc.validatorvn.com
         div(class='relative w-full h-fit rounded-3xl')
           .flex.flex-col.items-center.justify-center.gap-10.w-full
             h2.uppercase.font-ultraBold.text-white.text-center
@@ -147,15 +143,19 @@ main
                 Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
               div(class='flex items-center justify-center w-full lg:px-10' v-else)
                 ClientOnly
-                  Table.mt-3(v-if='hasBlocksData' :key='forceUpdate')
-                    TableCaption.text-white.text-lg {{ paginationData.start }} - {{ paginationData.end }} of 50
+                  Table.mt-3(v-if='hasBlocksData' :key='forceUpdate' class='relative')
+                    div(class='z-50 bg-black/80' v-if='isLoading').absolute.w-full.h-full
+                      div.w-full.h-full.flex.items-center.justify-center
+                        Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
+                    TableCaption.text-white.text-lg {{ ((blockStore.currentPage - 1 ) * blockStore.pageSize) + 1 }} - {{ blockStore.currentPage * blockStore.pageSize }} of {{ blockStore.totalData }}
                     TableHeader
                       TableRow
                         TableHead(v-for='text in header' class='w-[100px] text-primary font-semibold')
                           | {{ text }}
                     TableBody
-                      TableRow(v-for='(block,index) in paginationData.data' :key='block.hash' class='cursor-pointer')
-                        TableCell.text-white {{ paginationData.start + index }}
+                      TableRow(v-for='(block,index) in blockStore.latestBlocks' :key='block.hash' class='cursor-pointer')
+                        TableCell.text-white {{ (blockStore.currentPage * blockStore.pageSize) + index + 1 - blockStore.pageSize }}
+                        //- TableCell.text-white {{ ((blockStore.currentPage - 1) * blockStore.pageSize) + (index + 1) }}
                         TableCell.font-semibold.text-primary
                           NuxtLink(:to='navigateToBlockDetail(block.height)') {{ block.height }}
                         TableCell.text-white {{ trunCateText(block.hash) }}
@@ -168,7 +168,7 @@ main
                 ChevronLeft(class='group-hover:text-black').text-primary.w-5.h-5
               Button(class='hover:bg-primary group border-primary' @click='updateCurrentPage("next")').bg-transparent(variant='outline' size='icon')
                 ChevronRight(class='group-hover:text-black').text-primary.w-5.h-5
-            h3(v-if='!isSearching && !hasBlocksData').font-ultraBold.text-white.text-center.text-3xl  No Data Found         
+            h3(v-if='!hasBlocksData').font-ultraBold.text-white.text-center.text-3xl  No Data Found         
 </template>
 
 <style lang="scss" scoped></style>
