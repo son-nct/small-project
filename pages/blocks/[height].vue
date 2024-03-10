@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import { useAsyncData } from "#app";
-import { computed, ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
-import { Loader2 } from "lucide-vue-next";
+import { useAsyncData } from '#app'
+import { computed, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { Loader2 } from 'lucide-vue-next'
 
 import {
   Table,
@@ -12,79 +12,77 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 
-
-import { useBlocksStore } from "~/stores/blocks.store";
-import { useUtils } from "#imports";
+import { useBlocksStore } from '~/stores/blocks.store'
+import { useUtils } from '#imports'
 
 interface BlockDetailType {
-  hash: string;
-  height: string;
-  txs: number;
-  proposer: string;
-  time: string | null | undefined;
+  hash: string
+  height: string
+  txs: number
+  proposer: string
+  time: string | null | undefined
 }
 
-const route = useRoute();
-const height = ref("");
-const blockStore = useBlocksStore();
-const blockDetail = ref<BlockDetailType | null>(null);
-const dateTime = ref("");
-const { formatDateTime } = useUtils();
+const route = useRoute()
+const height = ref('')
+const blockStore = useBlocksStore()
+const blockDetail = ref<BlockDetailType | null>(null)
+const dateTime = ref('')
+const { formatDateTime } = useUtils()
 
 const navigateToTransactionDetail = (hash: string) => {
-  if (!hash) return {};
+  if (!hash) return {}
   return {
-    name: "transactions-hash",
+    name: 'transactions-hash',
     params: { hash },
-  };
-};
-
+  }
+}
 
 watchEffect(() => {
   height.value =
-    typeof route.params.height === "string" ? route.params.height : "";
-});
+    typeof route.params.height === 'string' ? route.params.height : ''
+})
 
-const header = ["No", "Transaction Type", "Hash Id"];
+const header = ['No', 'Transaction Type', 'Hash Id']
 
 const { data: block } = await useAsyncData(`block-height`, () =>
-  blockStore.fetchBlockDetailByHeight(height.value)
-);
+  blockStore.fetchBlockDetailByHeight(height.value),
+)
 
 if (block.value) {
-  console.log("block.value", block.value);
-  blockDetail.value = blockStore.normalizeBlockData(block.value);
-  dateTime.value = formatDateTime(block.value.header.time);
-  console.log("dateTime: ", dateTime.value);
+  console.log('block.value', block.value)
+  blockDetail.value = blockStore.normalizeBlockData(block.value)
+  dateTime.value = formatDateTime(block.value.header.time)
+  console.log('dateTime: ', dateTime.value)
 }
 
 const isExistHashData = computed(
-  () => block.value && block.value.tx_hashes.length > 0
-);
+  () => block.value && block.value.tx_hashes.length > 0,
+)
 
 const navigateToValidatorDetail = (address: string) => {
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
 const formatString = (input: string): string => {
-  const trimmedInput = input.trim();
-  const words = trimmedInput.split("_");
+  const trimmedInput = input.trim()
+  const words = trimmedInput.split('_')
 
   if (words.length === 1) {
-    return words[0].charAt(0).toUpperCase() + words[0].slice(1);
+    return words[0].charAt(0).toUpperCase() + words[0].slice(1)
   } else if (words.length === 2) {
     return words
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ')
   }
-  return trimmedInput;
-};
+  return trimmedInput
+}
 </script>
 
 <template lang="pug">

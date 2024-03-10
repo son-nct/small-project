@@ -1,76 +1,76 @@
 <script lang="ts" setup>
-import { useAsyncData, useLazyAsyncData, useNuxtApp } from "#app";
-import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
-import { useValidatorStore } from "~/stores/validators.store";
-import { Loader2 } from "lucide-vue-next";
+import { useAsyncData, useLazyAsyncData, useNuxtApp } from '#app'
+import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { Loader2 } from 'lucide-vue-next'
+import { useValidatorStore } from '~/stores/validators.store'
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip'
 // Reactively update address based on the route parameter
 
-const route = useRoute();
-const address = ref("");
-const validatorStore = useValidatorStore();
-const message = ref<string>("");
+const route = useRoute()
+const address = ref('')
+const validatorStore = useValidatorStore()
+const message = ref<string>('')
 
 watchEffect(() => {
   address.value =
-    typeof route.params.address === "string" ? route.params.address : "";
-});
+    typeof route.params.address === 'string' ? route.params.address : ''
+})
 
 if (validatorStore.allValidators.length === 0) {
-  const { data: allValidators } = await useAsyncData("all-validators", () =>
-    validatorStore.fetchValidatorList()
-  );
+  const { data: allValidators } = await useAsyncData('all-validators', () =>
+    validatorStore.fetchValidatorList(),
+  )
 }
 
 const { data: validator } = await useAsyncData(`validators-detail`, () =>
-  validatorStore.fetchValidatorDetail(address.value)
-);
+  validatorStore.fetchValidatorDetail(address.value),
+)
 
 const { data: blocks, pending } = await useLazyAsyncData(
   `validators-blocks`,
-  () => validatorStore.fetchBlocksByAddress(address.value)
-);
+  () => validatorStore.fetchBlocksByAddress(address.value),
+)
 
 const formatString = (input: string): string => {
-  const trimmedInput = input.trim();
-  const words = trimmedInput.split("_");
+  const trimmedInput = input.trim()
+  const words = trimmedInput.split('_')
 
   if (words.length === 1) {
-    return words[0].charAt(0).toUpperCase() + words[0].slice(1);
+    return words[0].charAt(0).toUpperCase() + words[0].slice(1)
   } else if (words.length === 2) {
     return words
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ')
   }
-  return trimmedInput;
-};
+  return trimmedInput
+}
 
-let fetchInterval = null;
-let keyTransition = ref(1);
+let fetchInterval = null
+const keyTransition = ref(1)
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    const newBlocks = await validatorStore.fetchLatestSignatures(address.value);
+    const newBlocks = await validatorStore.fetchLatestSignatures(address.value)
     if (newBlocks && newBlocks.length > 0) {
       if (blocks.value.length >= 100) {
-        blocks.value.splice(-100, 100);
+        blocks.value.splice(-100, 100)
       }
-      blocks.value.unshift(...newBlocks);
-      keyTransition.value += 1;
+      blocks.value.unshift(...newBlocks)
+      keyTransition.value += 1
     }
-  }, 5000);
-});
+  }, 5000)
+})
 
 onUnmounted(() => {
-  clearInterval(fetchInterval);
-});
+  clearInterval(fetchInterval)
+})
 </script>
 
 <template lang="pug">

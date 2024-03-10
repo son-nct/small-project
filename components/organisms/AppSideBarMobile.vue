@@ -1,66 +1,66 @@
 <script setup lang="ts">
-import { inject, ref, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { inject, ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
-const openMobileMenu = inject("openMobileMenuState");
+const openMobileMenu = inject('openMobileMenuState')
 const navigator = [
   {
-    text: "Blocks",
-    to: "/blocks",
+    text: 'Blocks',
+    to: '/blocks',
   },
   {
-    text: "Validators",
-    to: "/validators",
+    text: 'Validators',
+    to: '/validators',
   },
   {
-    text: "Transactions",
-    to: "/transactions",
+    text: 'Transactions',
+    to: '/transactions',
   },
-];
+]
 
 const closeMenu = () => {
-  openMobileMenu.value = false;
-};
+  openMobileMenu.value = false
+}
 
-const route = useRoute();
+const route = useRoute()
 watch(
   () => route.name,
   (newVal: string) => {
     if (openMobileMenu.value) {
-      closeMenu();
+      closeMenu()
     }
-  }
-);
+  },
+)
 
-const searchValue = ref("");
+const searchValue = ref('')
 
-const router = useRouter();
+const router = useRouter()
 const globalSearch = () => {
-  const trimmedSearchValue = searchValue.value.trim();
-  let routeDetails = { name: "", params: {} };
+  const trimmedSearchValue = searchValue.value.trim()
+  let routeDetails = { name: '', params: {} }
 
   if (trimmedSearchValue.length === 64) {
     routeDetails = {
-      name: "transactions-hash",
+      name: 'transactions-hash',
       params: { hash: trimmedSearchValue },
-    };
+    }
   } else if (trimmedSearchValue.length === 40) {
     routeDetails = {
-      name: "validators-address",
+      name: 'validators-address',
       params: { address: trimmedSearchValue },
-    };
+    }
   } else {
     routeDetails = {
-      name: "blocks-height",
+      name: 'blocks-height',
       params: { height: trimmedSearchValue },
-    };
+    }
   }
 
-  router.push(routeDetails);
+  router.push(routeDetails)
 
   // Clear the search input
-  searchValue.value = "";
-};
+  searchValue.value = ''
+}
 </script>
 
 <template lang="pug">

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { provide, ref } from "vue";
-import { useHead } from "#imports";
+import { provide, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import AppSideBarMobile from './AppSideBarMobile.vue'
+import { useHead } from '#imports'
 
-import { Input } from "@/components/ui/input";
-import { useRouter } from "vue-router";
-import AppSideBarMobile from "./AppSideBarMobile.vue";
+import { Input } from '@/components/ui/input'
 
-const searchValue = ref("");
+const searchValue = ref('')
 
 // const head = useHead({
 //   script: [
@@ -18,12 +18,12 @@ const searchValue = ref("");
 //   ],
 // });
 
-const openMobileMenu = ref(false);
-provide("openMobileMenuState", openMobileMenu);
+const openMobileMenu = ref(false)
+provide('openMobileMenuState', openMobileMenu)
 
 const toggleMobileMenu = () => {
-  openMobileMenu.value = !openMobileMenu.value;
-};
+  openMobileMenu.value = !openMobileMenu.value
+}
 
 const navigator = [
   // {
@@ -31,47 +31,47 @@ const navigator = [
   //   to: "/",
   // },
   {
-    text: "Blocks",
-    to: "/blocks",
+    text: 'Blocks',
+    to: '/blocks',
   },
   {
-    text: "Validators",
-    to: "/validators",
+    text: 'Validators',
+    to: '/validators',
   },
   {
-    text: "Transactions",
-    to: "/transactions",
+    text: 'Transactions',
+    to: '/transactions',
   },
-];
+]
 
-const router = useRouter();
+const router = useRouter()
 
 const globalSearch = () => {
-  const trimmedSearchValue = searchValue.value.trim();
-  let routeDetails = { name: "", params: {} };
+  const trimmedSearchValue = searchValue.value.trim()
+  let routeDetails = { name: '', params: {} }
 
   if (trimmedSearchValue.length === 64) {
     routeDetails = {
-      name: "transactions-hash",
+      name: 'transactions-hash',
       params: { hash: trimmedSearchValue },
-    };
+    }
   } else if (trimmedSearchValue.length === 40) {
     routeDetails = {
-      name: "validators-address",
+      name: 'validators-address',
       params: { address: trimmedSearchValue },
-    };
+    }
   } else {
     routeDetails = {
-      name: "blocks-height",
+      name: 'blocks-height',
       params: { height: trimmedSearchValue },
-    };
+    }
   }
 
-  router.push(routeDetails);
+  router.push(routeDetails)
 
   // Clear the search input
-  searchValue.value = "";
-};
+  searchValue.value = ''
+}
 </script>
 
 <template lang="pug">

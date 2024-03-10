@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed } from "vue";
-import { useAsyncData, useLazyAsyncData, useRuntimeConfig } from "#app";
-import { Loader2 } from "lucide-vue-next";
-import _ from "lodash";
+import { onMounted, ref, watch, computed } from 'vue'
+import { useAsyncData, useLazyAsyncData, useRuntimeConfig } from '#app'
+import { Loader2 } from 'lucide-vue-next'
+import _ from 'lodash'
 
+import { useRouter } from 'vue-router'
 import {
   Table,
   TableBody,
@@ -12,7 +13,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 
 import {
   Select,
@@ -22,95 +23,91 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select'
 
-import { useValidatorStore } from "~/stores/validators.store";
-import { useRouter } from "vue-router";
+import { useValidatorStore } from '~/stores/validators.store'
 // COMMIT SIGNATURES,	PARTICIPATION
 const header = [
-  "No",
-  "Validator",
-  "Moniker",
-  "Up Time",
-  "Voting Power",
-  "Commit Signatures",
-  "Participation",
-];
+  'No',
+  'Validator',
+  'Moniker',
+  'Up Time',
+  'Voting Power',
+  'Commit Signatures',
+  'Participation',
+]
 
-const searchValue = ref("");
-const currentPage = ref(1);
-const isLoading = ref(false);
-const isSearching = ref(false);
+const searchValue = ref('')
+const currentPage = ref(1)
+const isLoading = ref(false)
+const isSearching = ref(false)
 
-const validatorStore = useValidatorStore();
+const validatorStore = useValidatorStore()
 
 if (validatorStore.allValidators.length === 0) {
-  const { data: allValidators } = await useAsyncData("all-validators", () =>
-    validatorStore.fetchValidatorList()
-  );
+  const { data: allValidators } = await useAsyncData('all-validators', () =>
+    validatorStore.fetchValidatorList(),
+  )
 }
 
 const { data: paginatedValidators } = await useAsyncData(
   `validators-pagination-${currentPage.value}`,
-  () => validatorStore.paginationValidator(currentPage.value)
-);
+  () => validatorStore.paginationValidator(currentPage.value),
+)
 
 const isShowLoadMore = () => {
-  return validatorStore.shouldShowLoadMore(searchValue.value);
-};
+  return validatorStore.shouldShowLoadMore(searchValue.value)
+}
 
 const loadMoreData = async () => {
-  isLoading.value = true;
-  currentPage.value += 1;
-  await validatorStore.paginationValidator(currentPage.value);
-  isLoading.value = false;
-};
+  isLoading.value = true
+  currentPage.value += 1
+  await validatorStore.paginationValidator(currentPage.value)
+  isLoading.value = false
+}
 
 const paginatedValidatorsBySearch = async () => {
-  currentPage.value = 1;
-  await validatorStore.paginationValidator(
-    currentPage.value,
-    searchValue.value
-  );
-  isSearching.value = false;
-};
-const debouncedUpdateProducts = _.debounce(paginatedValidatorsBySearch, 500);
+  currentPage.value = 1
+  await validatorStore.paginationValidator(currentPage.value, searchValue.value)
+  isSearching.value = false
+}
+const debouncedUpdateProducts = _.debounce(paginatedValidatorsBySearch, 500)
 
 const hasValidatorData = computed(
-  () => validatorStore.validatorPagination.length > 0
-);
+  () => validatorStore.validatorPagination.length > 0,
+)
 
-const router = useRouter();
+const router = useRouter()
 
 const navigateToAddress = (address: string) => {
   // router.push({
   //   name: "validators-address",
   //   params: { address },
   // });
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
 watch(
   () => searchValue.value,
   (newVal: string) => {
-    isSearching.value = true;
-    validatorStore.validatorPagination = [];
-    debouncedUpdateProducts();
-  }
-);
+    isSearching.value = true
+    validatorStore.validatorPagination = []
+    debouncedUpdateProducts()
+  },
+)
 
-const listPageSize = [10, 20, 50];
+const listPageSize = [10, 20, 50]
 
 const changePageSize = async (numberSize: number) => {
-  isSearching.value = true;
-  validatorStore.pageSize = numberSize;
-  await validatorStore.paginationValidator(1);
-  isSearching.value = false;
-};
+  isSearching.value = true
+  validatorStore.pageSize = numberSize
+  await validatorStore.paginationValidator(1)
+  isSearching.value = false
+}
 </script>
 
 <template lang="pug">

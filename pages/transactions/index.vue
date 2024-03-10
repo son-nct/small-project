@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, onUnmounted, reactive } from "vue";
-import { useAsyncData, useLazyAsyncData } from "#app";
-import { Loader2 } from "lucide-vue-next";
-import { Badge } from "@/components/ui/badge";
+import { onMounted, ref, watch, computed, onUnmounted, reactive } from 'vue'
+import { useAsyncData, useLazyAsyncData } from '#app'
+import { Loader2 } from 'lucide-vue-next'
+import _ from 'lodash'
+import { useRouter } from 'vue-router'
+import { Badge } from '@/components/ui/badge'
 
-import _ from "lodash";
 import {
   Table,
   TableBody,
@@ -13,85 +14,84 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table'
 
-import { useRouter } from "vue-router";
-import { useTransactionStore } from "~/stores/transactions.store";
-import { useUtils } from "~/composables/useUtils";
+import { useTransactionStore } from '~/stores/transactions.store'
+import { useUtils } from '~/composables/useUtils'
 
-const header = ["No", "Tx", "Height", "Type", "Shielded", "Status", "Time"];
+const header = ['No', 'Tx', 'Height', 'Type', 'Shielded', 'Status', 'Time']
 
-const searchValue = ref("");
-const isLoading = ref(false);
-const isSearching = ref(false);
-const forceUpdate = ref(1);
-const latestBlockId = ref("");
-const latestHeight = ref(0);
-const latestTime = ref("");
+const searchValue = ref('')
+const isLoading = ref(false)
+const isSearching = ref(false)
+const forceUpdate = ref(1)
+const latestBlockId = ref('')
+const latestHeight = ref(0)
+const latestTime = ref('')
 
-const transactionStore = useTransactionStore();
+const transactionStore = useTransactionStore()
 
 const navigateToValidatorDetail = (address: string) => {
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
 const { data: transactions, pending } = await useAsyncData(
-  "latest-transactions",
-  () => transactionStore.fetchLatestTransactionList()
-);
+  'latest-transactions',
+  () => transactionStore.fetchLatestTransactionList(),
+)
 
 const hasTransactionData = computed(
-  () => transactionStore.latestTransaction.length > 0
-);
+  () => transactionStore.latestTransaction.length > 0,
+)
 
 const navigateToBlockDetail = (height: string) => {
-  if (!height) return {};
+  if (!height) return {}
   return {
-    name: "blocks-height",
+    name: 'blocks-height',
     params: { height },
-  };
-};
+  }
+}
 
 const navigateToTransactionDetail = (hash: string) => {
-  if (!hash) return {};
+  if (!hash) return {}
   return {
-    name: "transactions-hash",
+    name: 'transactions-hash',
     params: { hash },
-  };
-};
+  }
+}
 
-const router = useRouter();
+const router = useRouter()
 const searchByTransactionHash = () => {
-  if (searchValue.value.trim().length === 0) return;
+  if (searchValue.value.trim().length === 0) return
   router.push({
-    name: "transactions-hash",
+    name: 'transactions-hash',
     params: { hash: searchValue.value },
-  });
-};
+  })
+}
 
 const trunCateText = (text: string) => {
-  const { truncateText } = useUtils();
-  const startChars = 7;
-  const endCharts = 5;
-  return truncateText(text, startChars, endCharts);
-};
+  const { truncateText } = useUtils()
+  const startChars = 7
+  const endCharts = 5
+  return truncateText(text, startChars, endCharts)
+}
 
-let fetchInterval = null;
+let fetchInterval = null
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    await transactionStore.fetchLatestTransactionList();
-    forceUpdate.value += 1;
-  }, 4000);
-});
+    await transactionStore.fetchLatestTransactionList()
+    forceUpdate.value += 1
+  }, 4000)
+})
 
 onUnmounted(() => {
-  clearInterval(fetchInterval);
-});
+  clearInterval(fetchInterval)
+})
 </script>
 
 <template lang="pug">

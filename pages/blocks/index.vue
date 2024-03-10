@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, computed, onUnmounted, reactive } from "vue";
-import { useAsyncData, useLazyAsyncData } from "#app";
-import { Loader2 } from "lucide-vue-next";
-import _ from "lodash";
+import { onMounted, ref, watch, computed, onUnmounted, reactive } from 'vue'
+import { useAsyncData, useLazyAsyncData } from '#app'
+import { Loader2, ChevronRight, ChevronLeft } from 'lucide-vue-next'
+import _ from 'lodash'
+import { useRouter } from 'vue-router'
 import {
   Table,
   TableBody,
@@ -11,119 +12,117 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ChevronRight, ChevronLeft } from "lucide-vue-next";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
 
-import { useRouter } from "vue-router";
-import { useBlocksStore } from "~/stores/blocks.store";
-import { useUtils } from "~/composables/useUtils";
+import { useBlocksStore } from '~/stores/blocks.store'
+import { useUtils } from '~/composables/useUtils'
 
-const header = ["No", "Height", "Hash", "Txs", "Proposer", "Time"];
+const header = ['No', 'Height', 'Hash', 'Txs', 'Proposer', 'Time']
 
-const searchValue = ref("");
-const currentPage = ref(1);
-const isLoading = ref(false);
-const isSearching = ref(false);
-const forceUpdate = ref(1);
+const searchValue = ref('')
+const currentPage = ref(1)
+const isLoading = ref(false)
+const isSearching = ref(false)
+const forceUpdate = ref(1)
 
-const blockStore = useBlocksStore();
+const blockStore = useBlocksStore()
 const paginationData = reactive({
   start: 1,
   end: 10,
   totalPage: 5,
   data: [] as any[],
-});
+})
 
 const updateLatestData = (newData: any) => {
   blockStore.latestBlocks = newData.map((block: any) => ({
     ...blockStore.normalizeBlockData(block),
-  }));
-};
+  }))
+}
 
 const updatePaginatedBlock = () => {
-  const { start, end, data, totalPage } = blockStore.paginatedBlocks();
-  paginationData.start = start;
-  paginationData.end = end;
-  paginationData.totalPage = totalPage;
-  paginationData.data = data;
-};
+  const { start, end, data, totalPage } = blockStore.paginatedBlocks()
+  paginationData.start = start
+  paginationData.end = end
+  paginationData.totalPage = totalPage
+  paginationData.data = data
+}
 
 const updateCurrentPage = (type: string) => {
   switch (type) {
-    case "next":
+    case 'next':
       if (blockStore.currentPage < paginationData.totalPage) {
-        blockStore.currentPage += 1;
+        blockStore.currentPage += 1
       }
-      break;
-    case "prev":
+      break
+    case 'prev':
       if (blockStore.currentPage > 1) {
-        blockStore.currentPage -= 1;
+        blockStore.currentPage -= 1
       }
-      break;
+      break
     default:
-      break;
+      break
   }
-  updatePaginatedBlock();
-  forceUpdate.value += 1;
-};
+  updatePaginatedBlock()
+  forceUpdate.value += 1
+}
 
 const navigateToValidatorDetail = (address: string) => {
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
-const { data: blocks, pending } = await useAsyncData("latest-block", () =>
-  blockStore.fetchLatestBlocksList()
-);
+const { data: blocks, pending } = await useAsyncData('latest-block', () =>
+  blockStore.fetchLatestBlocksList(),
+)
 
-updateLatestData(blocks.value);
-updatePaginatedBlock();
+updateLatestData(blocks.value)
+updatePaginatedBlock()
 
-const hasBlocksData = computed(() => blockStore.latestBlocks.length > 0);
+const hasBlocksData = computed(() => blockStore.latestBlocks.length > 0)
 
 const navigateToBlockDetail = (height: string) => {
-  if (!height) return {};
+  if (!height) return {}
   return {
-    name: "blocks-height",
+    name: 'blocks-height',
     params: { height },
-  };
-};
+  }
+}
 
-const router = useRouter();
+const router = useRouter()
 
 const searchByBlockHeight = () => {
-  if (searchValue.value.trim().length === 0) return;
+  if (searchValue.value.trim().length === 0) return
   router.push({
-    name: "blocks-height",
+    name: 'blocks-height',
     params: { height: searchValue.value },
-  });
-};
+  })
+}
 
 const trunCateText = (text: string) => {
-  const { truncateText } = useUtils();
-  const startChars = 7;
-  const endCharts = 5;
-  return truncateText(text, startChars, endCharts);
-};
+  const { truncateText } = useUtils()
+  const startChars = 7
+  const endCharts = 5
+  return truncateText(text, startChars, endCharts)
+}
 
-let fetchInterval = null;
+let fetchInterval = null
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    const newData = await blockStore.fetchLatestBlocksList();
-    updateLatestData(newData);
-    updatePaginatedBlock();
-    forceUpdate.value += 1;
-  }, 4000);
-});
+    const newData = await blockStore.fetchLatestBlocksList()
+    updateLatestData(newData)
+    updatePaginatedBlock()
+    forceUpdate.value += 1
+  }, 4000)
+})
 
 onUnmounted(() => {
-  clearInterval(fetchInterval);
-});
+  clearInterval(fetchInterval)
+})
 </script>
 
 <template lang="pug">

@@ -1,13 +1,9 @@
 <script lang="ts" setup>
 definePageMeta({
-  middleware: ['navigate']
+  middleware: ['navigate'],
 })
 </script>
 
-<template>
-  
-</template>
+<template></template>
 
-<style lang="scss" scoped>
-  
-</style>
+<style lang="scss" scoped></style>

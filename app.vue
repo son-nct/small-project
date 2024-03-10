@@ -1,7 +1,7 @@
 <script setup></script>
 
 <template>
-  <NuxtLayout class='min-h-screen bg-dark'>
+  <NuxtLayout class="min-h-screen bg-dark">
     <NuxtPage />
   </NuxtLayout>
 </template>

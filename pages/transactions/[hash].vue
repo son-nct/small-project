@@ -1,104 +1,104 @@
 <script lang="ts" setup>
-import { useAsyncData } from "#app";
-import { computed, ref, watchEffect } from "vue";
-import { useRoute } from "vue-router";
-import { Loader2 } from "lucide-vue-next";
-import { Badge } from "@/components/ui/badge";
+import { useAsyncData } from '#app'
+import { computed, ref, watchEffect } from 'vue'
+import { useRoute } from 'vue-router'
+import { Loader2 } from 'lucide-vue-next'
+import { Badge } from '@/components/ui/badge'
 
-import { useTransactionStore } from "~/stores/transactions.store";
-import { useUtils } from "#imports";
+import { useTransactionStore } from '~/stores/transactions.store'
+import { useUtils } from '#imports'
 
 interface TransactionDetail {
-  chanId: string;
-  txHash: string;
-  gasWanted: string;
-  gasUsed: string;
-  status: "Success" | "false";
-  height: number;
-  time: string;
-  fee: string;
-  gas: string;
-  shielded: "Yes" | "No";
+  chanId: string
+  txHash: string
+  gasWanted: string
+  gasUsed: string
+  status: 'Success' | 'false'
+  height: number
+  time: string
+  fee: string
+  gas: string
+  shielded: 'Yes' | 'No'
 }
 
-const route = useRoute();
-const transactionStore = useTransactionStore();
-const hash = ref("");
-const { formatDateTime } = useUtils();
-const transactionDetail = ref<TransactionDetail | null>(null);
+const route = useRoute()
+const transactionStore = useTransactionStore()
+const hash = ref('')
+const { formatDateTime } = useUtils()
+const transactionDetail = ref<TransactionDetail | null>(null)
 
 const navigateToTransactionDetail = (address: string) => {
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
 const navigateToBlockDetail = (height: string) => {
-  if (!height) return {};
+  if (!height) return {}
   return {
-    name: "blocks-height",
+    name: 'blocks-height',
     params: { height },
-  };
-};
+  }
+}
 
 watchEffect(() => {
-  hash.value = typeof route.params.hash === "string" ? route.params.hash : "";
-});
+  hash.value = typeof route.params.hash === 'string' ? route.params.hash : ''
+})
 
 const { data: transaction } = await useAsyncData(
   `transaction-detail-by-hash`,
-  () => transactionStore.fetchTransactionByHash(hash.value)
-);
+  () => transactionStore.fetchTransactionByHash(hash.value),
+)
 
 const { data: detail, pending } = await useAsyncData(
   `transaction-detail-normalize`,
-  () => transactionStore.normalizeTransactionByHash(transaction.value)
-);
+  () => transactionStore.normalizeTransactionByHash(transaction.value),
+)
 
-transactionDetail.value = detail.value;
+transactionDetail.value = detail.value
 
-const hasTransactionData = computed(() => transactionDetail.value);
+const hasTransactionData = computed(() => transactionDetail.value)
 
 const formatDateTimeFunc = (dateTimeString: string) => {
-  if (!dateTimeString) return "";
-  return formatDateTime(dateTimeString);
-};
+  if (!dateTimeString) return ''
+  return formatDateTime(dateTimeString)
+}
 
 const navigateToValidatorDetail = (address: string) => {
-  if (!address) return {};
+  if (!address) return {}
   return {
-    name: "validators-address",
+    name: 'validators-address',
     params: { address },
-  };
-};
+  }
+}
 
 const formatString = (input: string): string => {
-  const trimmedInput = input.trim();
-  const words = trimmedInput.split("_");
+  const trimmedInput = input.trim()
+  const words = trimmedInput.split('_')
 
   if (words.length === 1) {
-    return words[0].charAt(0).toUpperCase() + words[0].slice(1);
+    return words[0].charAt(0).toUpperCase() + words[0].slice(1)
   } else if (words.length === 2) {
     return words
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+      .join(' ')
   }
-  return trimmedInput;
-};
+  return trimmedInput
+}
 
 const copyDataToClipboard = () => {
   navigator.clipboard
     .writeText(transactionStore.rawData)
     .then(() => {
       // console.log('Data copied to clipboard successfully!');
-      transactionStore.showCopiedToast();
+      transactionStore.showCopiedToast()
     })
     .catch((err) => {
-      console.error("Failed to copy data to clipboard:", err);
-    });
-};
+      console.error('Failed to copy data to clipboard:', err)
+    })
+}
 </script>
 
 <template lang="pug">
