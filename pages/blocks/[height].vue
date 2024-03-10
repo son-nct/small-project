@@ -3,6 +3,7 @@ import { useAsyncData } from '#app'
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { Loader2 } from 'lucide-vue-next'
+import ShieldedHeader from "~/components/molecules/ShieldedHeader.vue";
 
 import {
   Table,
@@ -90,9 +91,7 @@ main
     article
         section.bg-dark
             .container(class='z-10 p-8 mx-auto lg:p-10')
-                div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
-                  h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
-                  p.text-neutralPink https://namada-rpc.validatorvn.com
+                shielded-header
                 .element-section
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                         h2.uppercase.font-ultraBold.text-white.text-center(class='mb-20 text-5xl lg:text-6xl')
@@ -101,8 +100,9 @@ main
                     div(class='grid w-full grid-col-1 lg:grid-cols-2 lg:mt-0 lg:px-10').gap-10
                       .w-full.flex.flex-col.gap-4.items-center.justify-center.border-b.pb-4.break-words.overflow-x-auto(v-for='(value, key) in blockDetail')
                           template(v-if='key === "time"')
-                            h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
-                            p(class='overflow-x-auto text-base lg:text-lg whitespace-nowrap').text-center.text-neutralPink.tracking-tight.break-words {{ `${value} ( ${dateTime })` }}
+                            ClientOnly
+                              h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                              p(class='overflow-x-auto text-base lg:text-lg whitespace-nowrap').text-center.text-neutralPink.tracking-tight.break-words {{ `${value} ( ${dateTime })` }}
                           template(v-else-if='key === "proposer"')
                             h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
                             NuxtLink(:to='navigateToValidatorDetail(value)' class='text-base lg:text-lg').text-center.text-primary.tracking-tight.break-words {{ value }}

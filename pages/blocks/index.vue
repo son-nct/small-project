@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useBlocksStore } from "~/stores/blocks.store";
 import { useUtils } from "~/composables/useUtils";
+import ShieldedHeader from "~/components/molecules/ShieldedHeader.vue";
 
 const header = ["No", "Height", "Hash", "Txs", "Proposer", "Time"];
 
@@ -126,9 +127,7 @@ main
   article
     section.bg-dark.relative.overflow-hidden.min-h-screen
       .container(class='z-10 p-8 mx-auto lg:p-10')
-        div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
-          h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
-          a(href='https://namada-rpc.validatorvn.com' target="_blank").text-neutralPink https://namada-rpc.validatorvn.com
+        shielded-header
         div(class='relative w-full h-fit rounded-3xl')
           .flex.flex-col.items-center.justify-center.gap-10.w-full
             h2.uppercase.font-ultraBold.text-white.text-center

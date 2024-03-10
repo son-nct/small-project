@@ -4,6 +4,8 @@ import { computed, onMounted, onUnmounted, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { Loader2 } from 'lucide-vue-next'
 import { useValidatorStore } from '~/stores/validators.store'
+import ShieldedHeader from "~/components/molecules/ShieldedHeader.vue";
+
 
 import {
   Tooltip,
@@ -37,6 +39,14 @@ const { data: blocks, pending } = await useLazyAsyncData(
   `validators-blocks`,
   () => validatorStore.fetchBlocksByAddress(address.value),
 )
+
+const navigateToBlockDetail = (height: string) => {
+  if (!height) return {};
+  return {
+    name: "blocks-height",
+    params: { height },
+  };
+};
 
 const formatString = (input: string): string => {
   const trimmedInput = input.trim()
@@ -78,9 +88,7 @@ main
     article
         section.bg-dark
             .container(class='z-10 p-8 mx-auto lg:p-10')
-                div(class='items-start lg:items-end').flex.flex-col.pl-6.w-full.mb-10
-                  h3(class='text-base lg:text-lg').text-primary shielded-expedition.88f17d1d14
-                  p.text-neutralPink https://namada-rpc.validatorvn.com
+                shielded-header
                 .element-section
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                         h2.uppercase.font-ultraBold.text-white.text-center(class='mb-20 text-5xl lg:text-6xl') Validator Details
@@ -99,8 +107,9 @@ main
                                     div.flex.items-center.flex-wrap.gap-2(:key='keyTransition')
                                       TooltipProvider(v-for='(block,index) in blocks' :key="`block-${block.block_number}-${index}`")
                                           Tooltip
-                                              TooltipTrigger
-                                                  div(:class="block.sign_status ? 'bg-primary' : 'bg-red-500'").w-4.h-4.rounded-xs
+                                              NuxtLink(:to='navigateToBlockDetail(block.block_number)')
+                                                TooltipTrigger
+                                                    div(:class="block.sign_status ? 'bg-primary' : 'bg-red-500'").w-4.h-4.rounded-xs
                                               TooltipContent.bg-dark.border-neutral.shadow-md
                                                   .flex.flex-col
                                                       .flex.flex-col
