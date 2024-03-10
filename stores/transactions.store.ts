@@ -79,7 +79,6 @@ export const useTransactionStore = defineStore("transactions", {
             page: this.currentPage,
             size_of_page: this.pageSize,
           },
-          lazy: true,
         });
 
         if (data.value as TransactionsResponse) {
@@ -137,7 +136,7 @@ export const useTransactionStore = defineStore("transactions", {
       const baseURI = "/block/hash";
       const apiUrl = runtimeConfig.public.NAMANDA_BASE_URL + baseURI;
       try {
-        const { data, error } = await useLazyFetch(`${apiUrl}/${blockId}`);
+        const { data, error } = await useFetch(`${apiUrl}/${blockId}`);
 
         if (data.value) {
           return {
