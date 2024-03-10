@@ -109,7 +109,7 @@ main
             div(class='flex flex-col items-center w-full space-y-5 lg:space-y-0 lg:flex-row')
               div.flex.w-full.items-center.justify-center
                 div(class='w-full lg:w-1/3').border.border-primary.h-14
-                  input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
+                  input(@keyup.enter='searchByTransactionHash' type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
                 button(type='button' class='hidden w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14 lg:block' @click='searchByTransactionHash') Search
             div(class='w-full lg:container lg:mx-auto')
               div(class='flex items-center justify-center w-full lg:px-10')
