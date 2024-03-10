@@ -14,12 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 import { useBlocksStore } from "~/stores/blocks.store";
 import { useUtils } from "#imports";
@@ -39,13 +33,14 @@ const blockDetail = ref<BlockDetailType | null>(null);
 const dateTime = ref("");
 const { formatDateTime } = useUtils();
 
-const navigateToTransactionDetail = (address: string) => {
-  if (!address) return {};
+const navigateToTransactionDetail = (hash: string) => {
+  if (!hash) return {};
   return {
-    name: "validators-address",
-    params: { address },
+    name: "transactions-hash",
+    params: { hash },
   };
 };
+
 
 watchEffect(() => {
   height.value =
@@ -104,21 +99,21 @@ main
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                         h2.uppercase.font-ultraBold.text-white.text-center(class='mb-20 text-5xl lg:text-6xl')
                           | Block 
-                          span.text-primary {{ `#${height}`}}
-                    div(class='grid grid-col-1 lg:grid-cols-2 lg:mt-0 lg:px-10').gap-10
-                        .flex.flex-col.gap-4.items-center.justify-center.border-b.pb-4.break-words(v-for='(value, key) in blockDetail')
-                            template(v-if='key === "time"')
-                              h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
-                              p.text-center.text-neutralPink.text-lg.tracking-tight.break-words {{ `${value} ( ${dateTime })` }}
-                            template(v-else-if='key === "proposer"')
-                              h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
-                              NuxtLink(:to='navigateToValidatorDetail(value)').text-center.text-primary.text-lg.tracking-tight.break-words {{ value }}
-                            template(v-else)
-                              h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
-                              p.text-center.text-neutralPink.text-lg.tracking-tight.break-words {{ value }}
+                          span(v-if='height').text-primary {{ `#${height}`}}
+                    div(class='grid w-full grid-col-1 lg:grid-cols-2 lg:mt-0 lg:px-10').gap-10
+                      .w-full.flex.flex-col.gap-4.items-center.justify-center.border-b.pb-4.break-words.overflow-x-auto(v-for='(value, key) in blockDetail')
+                          template(v-if='key === "time"')
+                            h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                            p(class='overflow-x-auto text-base lg:text-lg whitespace-nowrap').text-center.text-neutralPink.tracking-tight.break-words {{ `${value} ( ${dateTime })` }}
+                          template(v-else-if='key === "proposer"')
+                            h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                            NuxtLink(:to='navigateToValidatorDetail(value)' class='text-base lg:text-lg').text-center.text-primary.tracking-tight.break-words {{ value }}
+                          template(v-else)
+                            h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                            p(class='overflow-x-auto text-base lg:text-lg whitespace-nowrap').text-center.text-neutralPink.tracking-tight.break-words {{ value }}
                 .element-section(v-if='block')
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
-                      h2.uppercase.font-ultraBold.text-white.text-center(class='mb-10 text-5xl lg:text-6xl') Transactions
+                      h2.uppercase.font-ultraBold.text-white.text-center(class='mb-10 text-3xl md:text-5xl lg:text-6xl') Transactions
                       div(class='w-full lg:container lg:mx-auto')
                       div.w-full.h-full.flex.items-center.justify-center
                           //- Loader2(class="w-10 h-10 mr-2 text-primary animate-spin")
@@ -132,10 +127,9 @@ main
                               TableBody
                                 TableRow(v-for='(block,index) in block.tx_hashes' :key='block.hash_id' class='cursor-pointer')
                                   TableCell.text-white {{ index + 1 }}
-                                  TableCell.font-semibold.text-primary   {{ block.tx_type }}
-                                    //- NuxtLink(:to='navigateToBlockDetail(block.height)') {{ block.tx_type }}
-                                  TableCell.text-white {{ block.hash_id }} 
-                                    //- NuxtLink(:to='navigateToTransactionDetail(block.hash_id)') {{ block.hash_id }}
+                                  TableCell.text-white  {{ block.tx_type }}
+                                  TableCell.font-semibold.text-primary 
+                                    NuxtLink(:to='navigateToTransactionDetail(block.hash_id)') {{ block.hash_id }}
                             
                     
                 .container(v-if='!block')

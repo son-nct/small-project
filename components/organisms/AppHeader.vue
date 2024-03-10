@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from "vue-router";
 import AppSideBarMobile from "./AppSideBarMobile.vue";
 
-const searchAddr = ref("");
+const searchValue = ref("");
 
 // const head = useHead({
 //   script: [
@@ -46,12 +46,31 @@ const navigator = [
 
 const router = useRouter();
 
-const navigateToAddress = () => {
-  router.push({
-    name: "validators-address",
-    params: { address: searchAddr.value },
-  });
-  searchAddr.value = "";
+const globalSearch = () => {
+  const trimmedSearchValue = searchValue.value.trim();
+  let routeDetails = { name: "", params: {} };
+
+  if (trimmedSearchValue.length === 64) {
+    routeDetails = {
+      name: "transactions-hash",
+      params: { hash: trimmedSearchValue },
+    };
+  } else if (trimmedSearchValue.length === 40) {
+    routeDetails = {
+      name: "validators-address",
+      params: { address: trimmedSearchValue },
+    };
+  } else {
+    routeDetails = {
+      name: "blocks-height",
+      params: { height: trimmedSearchValue },
+    };
+  }
+
+  router.push(routeDetails);
+
+  // Clear the search input
+  searchValue.value = "";
 };
 </script>
 
@@ -77,9 +96,9 @@ div
           div(class='flex items-center justify-start w-1/3 text-white lg:justify-center')
           div(class='w-2/3 lg:w-full').flex.justify-end.items-end
             .relative.w-full.items-center(class='hidden lg:flex')
-              input(class='w-full placeholder:text-primary' v-model='searchAddr' @keyup.enter='navigateToAddress')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Search by address...')
+              input(class='w-full placeholder:text-primary' v-model='searchValue' @keyup.enter='globalSearch')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Search by height/ tx hash/ validator address...')
               span.absolute.start-0.inset-y-0.flex.items-center.justify-center.px-2(@click='')
-                Icon(@click='navigateToAddress' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
+                Icon(@click='globalSearch' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
 
             div(class='w-2/3 lg:w-1/3').flex.justify-end
               NuxtImg(src='/imgs/svg/menu.svg' alt='Logo' width='19' height='14' class='w-10' loading='lazy' class='block lg:hidden' @click='toggleMobileMenu')

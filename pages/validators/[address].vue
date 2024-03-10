@@ -84,10 +84,10 @@ main
                 .element-section
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                         h2.uppercase.font-ultraBold.text-white.text-center(class='mb-20 text-5xl lg:text-6xl') Validator Details
-                    div(class='grid grid-col-1 lg:grid-cols-3 lg:mt-0 lg:px-10').gap-10
-                        .flex.flex-col.gap-4.items-center.justify-center.border-b.pb-4.break-words(v-for='(value, key) in validator')
-                            h5.font-ultraBold.text-primary.text-center {{ formatString(key) }}
-                            p.text-center.text-lightGray.text-base.tracking-tight.break-words {{ value }}
+                    div(class='grid grid-col-1 lg:grid-cols-2 lg:mt-0 lg:px-10').gap-10
+                      .flex.flex-col.gap-4.items-center.justify-center.border-b.pb-4.break-words.overflow-x-auto(v-for='(value, key) in validator')
+                        h5.font-ultraBold.text-primary.text-center.text-3xl {{ formatString(key) }}
+                        p(class='overflow-x-auto text-base lg:text-lg whitespace-nowrap').text-center.text-neutralPink.tracking-tight.break-words {{ value }}
                 .element-section(v-if='validator')
                     div(class='relative flex flex-col w-full gap-4 h-fit lg:gap-10')
                             h2.uppercase.font-ultraBold.text-white.text-center(class='mb-10 text-5xl lg:text-6xl') 100 Blocks

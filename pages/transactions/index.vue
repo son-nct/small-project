@@ -44,14 +44,33 @@ const { data: transactions, pending } = await useAsyncData(
   () => transactionStore.fetchLatestTransactionList()
 );
 
-const hasTransactionData = computed(() => transactionStore.latestTransaction.length > 0);
- 
+const hasTransactionData = computed(
+  () => transactionStore.latestTransaction.length > 0
+);
+
 const navigateToBlockDetail = (height: string) => {
   if (!height) return {};
   return {
     name: "blocks-height",
     params: { height },
   };
+};
+
+const navigateToTransactionDetail = (hash: string) => {
+  if (!hash) return {};
+  return {
+    name: "transactions-hash",
+    params: { hash },
+  };
+};
+
+const router = useRouter();
+const searchByTransactionHash = () => {
+  if (searchValue.value.trim().length === 0) return;
+  router.push({
+    name: "transactions-hash",
+    params: { hash: searchValue.value },
+  });
 };
 
 const trunCateText = (text: string) => {
@@ -65,9 +84,9 @@ let fetchInterval = null;
 
 onMounted(() => {
   fetchInterval = setInterval(async () => {
-    await transactionStore.fetchLatestTransactionList()
+    await transactionStore.fetchLatestTransactionList();
     forceUpdate.value += 1;
-  }, 5000);
+  }, 4000);
 });
 
 onUnmounted(() => {
@@ -90,8 +109,8 @@ main
             div(class='flex flex-col items-center w-full space-y-5 lg:space-y-0 lg:flex-row')
               div.flex.w-full.items-center.justify-center
                 div(class='w-full lg:w-1/3').border.border-primary.h-14
-                  input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Block Height/Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
-                button(type='button' class='hidden w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14 lg:block' @click='debouncedUpdateProducts') Search
+                  input(type='text' v-model='searchValue' class='placeholder:text-primary' placeholder="Search by Transaction Hash...").w-full.h-full.p-4.outline-none.border-none.bg-transparent.text-primary
+                button(type='button' class='hidden w-full px-6 py-3 cursor-pointer bg-primary font-ultraBold lg:w-fit h-14 lg:block' @click='searchByTransactionHash') Search
             div(class='w-full lg:container lg:mx-auto')
               div(class='flex items-center justify-center w-full lg:px-10')
                 ClientOnly
@@ -106,9 +125,10 @@ main
                         TableBody
                             TableRow(v-for='(transaction,index) in transactionStore.latestTransaction' :key='transaction.tx' class='cursor-pointer')
                                 TableCell.text-white {{ index + 1 }}
-                                TableCell.font-semibold.text-primary {{ trunCateText(transaction.tx) }}
                                 TableCell.font-semibold.text-primary
-                                        NuxtLink(:to='navigateToBlockDetail(transaction.height)') {{ transaction.height }}
+                                  NuxtLink(:to='navigateToTransactionDetail(transaction.tx)') {{ trunCateText(transaction.tx) }}
+                                TableCell.font-semibold.text-primary
+                                  NuxtLink(:to='navigateToBlockDetail(transaction.height)') {{ transaction.height }}
                                     
                                 TableCell.text-white {{ transaction.type }}
                                 TableCell.text-white {{ transaction.shielded }}

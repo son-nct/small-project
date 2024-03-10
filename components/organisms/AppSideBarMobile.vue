@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { inject, ref } from "vue";
-import { useRouter } from "vue-router";
+import { inject, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 const openMobileMenu = inject("openMobileMenuState");
 const navigator = [
-  {
-    text: "Home",
-    to: "/",
-  },
   {
     text: "Blocks",
     to: "/blocks",
@@ -17,8 +13,8 @@ const navigator = [
     to: "/validators",
   },
   {
-    text: "Transaction",
-    to: "/transaction",
+    text: "Transactions",
+    to: "/transactions",
   },
 ];
 
@@ -26,15 +22,44 @@ const closeMenu = () => {
   openMobileMenu.value = false;
 };
 
-const searchAddr = ref("");
+const route = useRoute();
+watch(
+  () => route.name,
+  (newVal: string) => {
+    if (openMobileMenu.value) {
+      closeMenu();
+    }
+  }
+);
+
+const searchValue = ref("");
 
 const router = useRouter();
-const navigateToAddress = () => {
-  router.push({
-    name: "validators-address",
-    params: { address: searchAddr.value },
-  });
-  searchAddr.value = "";
+const globalSearch = () => {
+  const trimmedSearchValue = searchValue.value.trim();
+  let routeDetails = { name: "", params: {} };
+
+  if (trimmedSearchValue.length === 64) {
+    routeDetails = {
+      name: "transactions-hash",
+      params: { hash: trimmedSearchValue },
+    };
+  } else if (trimmedSearchValue.length === 40) {
+    routeDetails = {
+      name: "validators-address",
+      params: { address: trimmedSearchValue },
+    };
+  } else {
+    routeDetails = {
+      name: "blocks-height",
+      params: { height: trimmedSearchValue },
+    };
+  }
+
+  router.push(routeDetails);
+
+  // Clear the search input
+  searchValue.value = "";
 };
 </script>
 
@@ -45,15 +70,12 @@ Transition(name='menu')
       NuxtImg.img-investor(src='/imgs/svg/close-icon.svg' alt='close icon' width='40' height='40' class='relative float-right top-3 right-3' loading='lazy' @click='closeMenu')
       .flex.flex-col.w-full.h-full
         .relative.w-full.items-center(class='flex mt-10')
-          input(class='w-full placeholder:text-primary' v-model='searchAddr' @keyup.enter='navigateToAddress')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Search by address...')
+          input(class='w-full placeholder:text-primary' v-model='searchValue' @keyup.enter='globalSearch')#search.pl-10.bg-transparent.outline-none.bg-transparent.text-primary.border.border-primary.p-1(type='text' placeholder='Global Search...')
           span.absolute.start-0.inset-y-0.flex.items-center.justify-center.px-2(@click='')
-            Icon(@click='navigateToAddress' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
+            Icon(@click='globalSearch' name="ph:magnifying-glass" size="1.5rem" class='cursor-pointer').text-primary
         ul.list-none.p-0.flex.flex-col.w-full.gap-6.mt-10
           li.inline-block.list-none.ml-7.text-white(v-for='(item,index) in navigator' :key='item')
-            NuxtLink(:to='item.to' v-if='item.text !== "Validators"').text-lightGray {{ item.text }}
-              span.link__style
-              | &nbsp;
-            NuxtLink.link(:to='item.to' v-else).text-white {{ item.text }}
+            NuxtLink.link(:to='item.to').text-white {{ item.text }}
               span.link__style
               | &nbsp;
    

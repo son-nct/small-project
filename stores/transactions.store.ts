@@ -14,8 +14,8 @@ interface Transaction {
   gas_limit_multiplier: number;
   code: string;
   data: string;
-  return_code: null | string;
-  tx: null | string;
+  return_code: null | number;
+  tx: TxContent;
 }
 
 interface TransactionsResponse {
@@ -23,14 +23,34 @@ interface TransactionsResponse {
   total: number;
 }
 
+interface TxContent {
+  VoteProposal?: VoteProposal;
+}
+
+interface VoteProposal {
+  id: number;
+  vote: string;
+  voter: string;
+  delegations: string[];
+}
+
 export const useTransactionStore = defineStore("transactions", {
   state: () => ({
     latestTransaction: [] as Transaction[],
+    rawData: "" as string
   }),
   actions: {
+    showCopiedToast() {
+      const { toast } = useToast();
+      toast({
+        title: 'Copied !',
+        duration: 1000,
+      });
+    },
     showErrToast(msg: string) {
       const { toast } = useToast();
       toast({
+        duration: 2000,
         title: `Uh oh! Something went wrong with ${msg}.`,
         description: "There was a problem with your request.",
         variant: "destructive",
@@ -60,10 +80,9 @@ export const useTransactionStore = defineStore("transactions", {
           },
         });
 
-        if (data.value) {
+        if (data.value as TransactionsResponse) {
           const newData = await this.normalizeTransactionData(data.value.data);
-          this.latestTransaction = [...newData]  
-
+          this.latestTransaction = [...newData];
           // return data.value.data;
         } else if (error.value) {
           this.showErrToast("fetch transaction list");
@@ -105,13 +124,13 @@ export const useTransactionStore = defineStore("transactions", {
       );
 
       const transactionWithBlock = await Promise.all(transactionsPromises);
-      return transactionWithBlock
+      return transactionWithBlock;
     },
     async fetchLatestHeightBlockById(blockId: string) {
+      const runtimeConfig = useRuntimeConfig();
+      const baseURI = "/block/hash";
+      const apiUrl = runtimeConfig.public.NAMANDA_BASE_URL + baseURI;
       try {
-        const runtimeConfig = useRuntimeConfig();
-        const baseURI = "/block/hash";
-        const apiUrl = runtimeConfig.public.NAMANDA_BASE_URL + baseURI;
         const { data, error } = await useFetch(`${apiUrl}/${blockId}`);
 
         if (data.value) {
@@ -120,12 +139,63 @@ export const useTransactionStore = defineStore("transactions", {
             height: data.value.header.height,
           };
         } else if (error.value) {
-          this.showErrToast("fetch transaction list");
+          this.showErrToast("fetch block by Id");
         }
       } catch (error) {
-        this.showErrToast("fetch transaction list");
+        this.showErrToast("fetch block by Id");
       }
     },
+    async normalizeTransactionByHash(data: Transaction) {
+      if (!data) return;
+      const { time, height } = await this.fetchLatestHeightBlockById(data.block_id)
+
+      return {
+        chan_id: "shielded-expedition.88f17d1d14",
+        tx_hash: data.hash,
+        status:
+          data?.return_code === 0 || data?.tx_type == "Wrapper"
+            ? "Success"
+            : "Fail",
+        height,
+        time,
+        fee: `${data.fee_amount_per_gas_unit ?? 0} NAAN`,
+        "gas (used / wanted)": data?.gasUsed ? `${data.gasUsed} / ${data.gasWanted}` : '0 / 0',
+        shielded: data.data?.Transfer && data.data.Transfer?.shielded  ? 'Yes': 'No'
+      }
+    },
+    async fetchTransactionByHash(hash: string) {
+      const runtimeConfig = useRuntimeConfig();
+      const baseURI = "/tx";
+      const apiUrl = runtimeConfig.public.NAMANDA_BASE_URL + baseURI;
+
+      try {
+        const { data, error } = await useFetch(`${apiUrl}/${hash}`);
+        const transaction = data.value as Transaction
+        this.updateRawData(transaction);
+        return transaction
+        // return await this.normalizeTransactionByHash(transaction);
+      } catch (error) { }
+    },
+    updateRawData(data: Transaction) {
+      const rawData = {
+        hash: data.hash,
+        blockId: data.block_id,
+        gasWanted: '0',
+        gasUsed: '0',
+        returnCode: data.return_code,
+        fee: data.fee_amount_per_gas_unit ? data.fee_amount_per_gas_unit : 0,
+        data: data.data,
+        tx:
+          data.tx_type === 'Decrypted' && data.tx && data.tx.Ibc
+            ? {
+              typeUrl: data.tx.Ibc.Any.type_url,
+              value: [...data.tx.Ibc.Any.value.slice(0, 10), '...'],
+            }
+            : { ...data.tx },
+        txType: data.tx_type,
+      }
+      this.rawData = JSON.stringify(rawData, null, 2)
+    }
   },
 });
 

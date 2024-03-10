@@ -18,6 +18,7 @@ export const useValidatorStore = defineStore("validators", {
       const { toast } = useToast();
       toast({
         title: `Uh oh! Something went wrong with ${msg}.`,
+        duration: 2000,
         description: "There was a problem with your request.",
         variant: "destructive",
         action: h(
